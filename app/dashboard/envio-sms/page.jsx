@@ -90,7 +90,7 @@ export default function EnvioSMSPage() {
   const router = useRouter()
 
   const handleMessageClick = (id) => {
-    router.push(`/mensaje-sms/${id}`)
+    window.open(`/mensaje-sms/${id}`, "_blank")
   }
 
   return (

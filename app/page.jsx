@@ -8,7 +8,7 @@ export default function LoginPage() {
         <link rel="preload" as="image" href="/Login.webp" />
       </Head>
       <main className="min-h-screen bg-[url('/Login.webp')] bg-cover bg-center from-sky-400 to-sky-600 flex items-center justify-start p-4">
-        <div className="w-full max-w-md ml-[200px]">
+        <div className="w-full max-w-sm ml-[200px]">
           <LoginForm />
         </div>
         <footer className="fixed bottom-4 text-center text-white text-sm w-full">

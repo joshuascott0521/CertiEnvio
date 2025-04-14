@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 import Link from "next/link";
 import { Mail, Lock, AlertCircle } from "lucide-react";
 import Image from "next/image";
@@ -44,67 +45,45 @@ export function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validar formulario
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
     setErrors({});
 
     try {
-      const response = await fetch(
+      const response = await axios.post(
         "https://apienviaplusdev.creapptech.com/Usuario/Login",
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            Email: email,
-            Password: password,
-          }),
+          Email: email,
+          Password: password,
         }
       );
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (!response.ok) {
-        throw new Error(data.message || "Error al iniciar sesión");
-      }
-
-      // Si llegamos aquí, el login fue exitoso
-      console.log("Login exitoso:", data);
-
-      // Guardar token o datos de usuario si es necesario
       if (rememberMe && data.token) {
         localStorage.setItem("authToken", data.token);
       }
 
-      // Redirigir al dashboard
       router.push("/dashboard");
     } catch (error) {
-      console.error("Error de login:", error);
-      setErrors({
-        general:
-          error instanceof Error
-            ? error.message
-            : "Error al iniciar sesión. Intente nuevamente.",
-      });
+      const message =
+        error?.response?.data?.message || "Error al iniciar sesión. Intente nuevamente.";
+      setErrors({ general: message });
     } finally {
       setLoading(false);
     }
   };
 
+
   return (
-    <Card className="bg-[rgba(255,255,255,0.6)] text-white border-none backdrop-blur-sm rounded-2xl">
-      <CardHeader className="p-0 pt-4 flex justify-center items-center">
+    <Card className="bg-[#fefefe] bg-opacity-70 border-none backdrop-blur-sm rounded-3xl p-6">
+      <CardHeader className="p-0 pt-0 flex justify-center items-center">
         <CardTitle className="p-0 m-0">
           <img
             src="/logo.png"
             alt="Logo CertiEnvíos"
-            className="w-[200px] h-auto object-contain"
+            className="w-[250px] h-auto object-contain pb-2"
           />
         </CardTitle>
       </CardHeader>
@@ -122,7 +101,7 @@ export function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">CORREO</Label>
+            <Label htmlFor="email" className="text-login">CORREO</Label>
             <div className="relative">
               <Input
                 id="email"
@@ -130,9 +109,8 @@ export function LoginForm() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`pl-9 bg-sky-600/50 border-sky-500 text-white placeholder:text-sky-300 ${
-                  errors.email ? "border-red-400" : ""
-                }`}
+                className={`pl-5  bg-white bg-opacity-40 border-none rounded-full text-login placeholder:text-login ${errors.email ? "border-red-400" : ""
+                  }`}
               />
             </div>
             {errors.email && (
@@ -140,45 +118,47 @@ export function LoginForm() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">PASSWORD</Label>
+            <Label htmlFor="password" className="text-login">PASSWORD</Label>
             <div className="relative">
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`pl-9 bg-sky-600/50 border-sky-500 text-white ${
-                  errors.password ? "border-red-400" : ""
-                }`}
+                className={`pl-5 bg-white bg-opacity-40 border-none rounded-full text-login ${errors.password ? "border-red-400" : ""
+                  }`}
               />
             </div>
             {errors.password && (
               <p className="text-red-300 text-sm mt-1">{errors.password}</p>
             )}
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-row items-center space-x-1 gap-1 flex-wrap sm:flex-nowrap">
               <Checkbox
                 id="remember"
                 checked={rememberMe}
                 onCheckedChange={(checked) => setRememberMe(checked === true)}
-                className="border-sky-500 data-[state=checked]:bg-sky-500"
+                className="bg-white border-login data-[state=checked]:bg-login"
               />
-              <label htmlFor="remember" className="text-sm">
+              <label htmlFor="remember" className="font-montserrat font-semibold  text-xs text-login">
                 RECORDAR ME!
               </label>
             </div>
-            <Link href="/forgot-password" className="text-sm hover:underline">
+            <Link href="/forgot-password" className="font-montserrat  font-semibold text-xs text-login hover:text-loginHover  hover:underline">
               OLVIDÉ MI CONTRASEÑA?
             </Link>
           </div>
-          <Button
-            type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-            disabled={loading}
-          >
-            {loading ? "Ingresando..." : "Ingresar"}
-          </Button>
+          <div className="pt-6">
+            <Button
+              type="submit"
+              className="w-[150px] bg-orange-500 hover:bg-orange-600 text-white rounded-full mx-auto block"
+              disabled={loading}
+            >
+              {loading ? "Ingresando..." : "Ingresar"}
+            </Button>
+          </div>
+
         </form>
       </CardContent>
     </Card>
