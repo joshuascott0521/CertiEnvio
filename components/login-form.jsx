@@ -98,13 +98,13 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="bg-[rgba(255,255,255,0.6)] text-white border-none backdrop-blur-sm rounded-2xl">
+    <Card className="bg-[rgba(255,255,255,0.6)] text-white border-none backdrop-blur-sm rounded-[50px] h-[500px]  ">
       <CardHeader className="p-0 pt-4 flex justify-center items-center">
         <CardTitle className="p-0 m-0">
           <img
-            src="/logo.png"
+            src="/logo3.png"
             alt="Logo CertiEnvíos"
-            className="w-[200px] h-auto object-contain"
+            className="w-[250px] h-auto object-contain"
           />
         </CardTitle>
       </CardHeader>
@@ -130,7 +130,7 @@ export function LoginForm() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`pl-9 bg-sky-600/50 border-sky-500 text-white placeholder:text-sky-300 ${
+                className={`w-[80%] mx-auto pl-9 bg-sky-600/50 border-sky-500 text-white placeholder:text-sky-300 ${
                   errors.email ? "border-red-400" : ""
                 }`}
               />
@@ -147,7 +147,7 @@ export function LoginForm() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`pl-9 bg-sky-600/50 border-sky-500 text-white ${
+                className={`w-[80%] mx-auto pl-9 bg-sky-600/50 border-sky-500 text-white ${
                   errors.password ? "border-red-400" : ""
                 }`}
               />
