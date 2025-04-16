@@ -4,7 +4,7 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { FloatingLabel } from "@/components/ui/FloatingLabel"
 import axios from "axios";
-import { use, useState } from "react";
+import { useState, useEffect } from "react";
 
 
 export default function UsuarioPage() {
@@ -12,6 +12,29 @@ export default function UsuarioPage() {
   const [identificacion, setIdentificacion] = useState("");
   const [celular, setCelular] = useState("");
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const obtenerUsuario = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await axios.get("https://apienviaplusdev.creapptech.com/Usuario/Get", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = response.data;
+        setNombre(data.Nombre || "");
+        setIdentificacion(data.Documento || "");
+        setCelular(data.Celular || "");
+        setEmail(data.Email || "");
+      }catch (error){
+        console.error("Error al obtener datos del usuario:", error);
+      }
+    };
+
+    obtenerUsuario();
+  }, []);
 
   return (
     <div>
@@ -82,7 +105,6 @@ export default function UsuarioPage() {
                 </button>
               </div>
             </div>
-
           </CardContent>
         </Card>
       </div>

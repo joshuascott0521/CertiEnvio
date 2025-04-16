@@ -27,17 +27,17 @@ export const FloatingLabel: React.FC<FloatingLabelProps> = ({
         value={value}
         onChange={onChange}
         required={required}
-        autoComplete= "off"
+        autoComplete="off"
         placeholder=" "
-        className={`peer w-full h-12 border border-gray-300 rounded-xl px-3 pt-6 pb-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
+        className={`peer w-full h-10 border border-gray-300 rounded-xl px-3 pt-5 pb-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
       />
       <label
         htmlFor={id}
-        className="absolute left-3 top-1 text-gray-500 text-sm transition-all
-                    peer-placeholder-shown:top-3.5 
+        className="absolute left-3 top-1.5 text-gray-500 text-sm transition-all
+                    peer-placeholder-shown:top-3 
                     peer-placeholder-shown:text-base 
                     peer-placeholder-shown:text-gray-400 
-                    peer-focus:top-2 
+                    peer-focus:top-1.5 
                     peer-focus:text-sm 
                     peer-focus:text-blue-500"
       >

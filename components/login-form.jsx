@@ -61,9 +61,10 @@ export function LoginForm() {
 
       const data = response.data;
 
-      if (rememberMe && data.token) {
-        localStorage.setItem("authToken", data.token);
+      if (rememberMe && data.Token) {
+        localStorage.setItem("authToken", data.Token);
       }
+      
 
       router.push("/dashboard");
     } catch (error) {
