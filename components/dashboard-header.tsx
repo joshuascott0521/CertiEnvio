@@ -1,9 +1,13 @@
 import { ChevronDown, User } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-export function DashboardHeader({ title, breadcrumb }) {
+interface DashboardHeaderProps {
+  title: string
+  breadcrumb?: string
+}
+
+export function DashboardHeader({ title, breadcrumb }: DashboardHeaderProps) {
   return (
     <header className="h-16 bg-sky-500 text-white px-6 flex items-center justify-between">
       <div>
@@ -33,4 +37,3 @@ export function DashboardHeader({ title, breadcrumb }) {
     </header>
   )
 }
-

@@ -1,12 +1,26 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Download, Mail, Search } from "lucide-react"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 
-const emails = [
+interface Email {
+  id: number
+  entidad: string
+  aplicativo: string
+  remitente: string
+  destinatario: string
+  correo: string
+  asunto: string
+  fecha: string
+  estado: string
+}
+
+const emails: Email[] = [
   {
     id: 1,
     entidad: "Alcaldía de Baranca",
@@ -65,7 +79,7 @@ const emails = [
 ]
 
 // Función para obtener el color de fondo según el estado
-function getStatusBgColor(status) {
+function getStatusBgColor(status: string): string {
   switch (status) {
     case "Notificado":
       return "bg-green-500"
@@ -81,6 +95,18 @@ function getStatusBgColor(status) {
 }
 
 export default function EnvioEmailPage() {
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<Email[]>([])
+
+  useEffect(() => {
+    // Simular carga de datos
+    const timer = setTimeout(() => {
+      setData(emails)
+      setLoading(false)
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <div>
       <DashboardHeader title="Bienvenido a Envia+" breadcrumb="Envia+ / Inicio / Email" />
@@ -123,59 +149,90 @@ export default function EnvioEmailPage() {
         </div>
 
         <div className="space-y-4">
-          {emails.map((email) => (
-            <div key={email.id} className="border rounded-lg p-4 flex justify-between items-center">
-              <div className="flex">
-                <div className="mr-4">
-                  <Mail className="h-10 w-10 text-gray-400" />
-                </div>
-                <div>
-                  <div>
-                    <span className="font-medium">Entidad:</span> {email.entidad}
+          {loading
+            ? // Skeleton loader para emails
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="border rounded-lg p-4 flex justify-between items-center">
+                  <div className="flex">
+                    <div className="mr-4">
+                      <Skeleton className="h-10 w-10 rounded-md" />
+                    </div>
+                    <div>
+                      <Skeleton className="h-4 w-32 mb-2" />
+                      <Skeleton className="h-4 w-24 mb-2" />
+                      <Skeleton className="h-4 w-40" />
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-medium">Aplicativo:</span> {email.aplicativo}
+
+                  <div className="flex-1 mx-8">
+                    <Skeleton className="h-4 w-40 mb-2" />
+                    <Skeleton className="h-4 w-32 mb-2" />
+                    <Skeleton className="h-4 w-48" />
                   </div>
+
+                  <div className="mr-4">
+                    <Skeleton className="h-4 w-48 mb-2" />
+                    <Skeleton className="h-6 w-24 rounded-full" />
+                  </div>
+
                   <div>
-                    <span className="font-medium">Remitente:</span> {email.remitente}
+                    <Skeleton className="h-8 w-8 rounded-md" />
                   </div>
                 </div>
-              </div>
+              ))
+            : // Datos reales
+              data.map((email) => (
+                <div key={email.id} className="border rounded-lg p-4 flex justify-between items-center">
+                  <div className="flex">
+                    <div className="mr-4">
+                      <Mail className="h-10 w-10 text-gray-400" />
+                    </div>
+                    <div>
+                      <div>
+                        <span className="font-medium">Entidad:</span> {email.entidad}
+                      </div>
+                      <div>
+                        <span className="font-medium">Aplicativo:</span> {email.aplicativo}
+                      </div>
+                      <div>
+                        <span className="font-medium">Remitente:</span> {email.remitente}
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="flex-1 mx-8">
-                <div>
-                  <span className="font-medium">Destinatario:</span> {email.destinatario}
-                </div>
-                <div>
-                  <span className="font-medium">Correo:</span> {email.correo}
-                </div>
-                <div>
-                  <span className="font-medium">Asunto:</span> {email.asunto}
-                </div>
-              </div>
+                  <div className="flex-1 mx-8">
+                    <div>
+                      <span className="font-medium">Destinatario:</span> {email.destinatario}
+                    </div>
+                    <div>
+                      <span className="font-medium">Correo:</span> {email.correo}
+                    </div>
+                    <div>
+                      <span className="font-medium">Asunto:</span> {email.asunto}
+                    </div>
+                  </div>
 
-              <div className="mr-4">
-                <div>
-                  <span className="font-medium">Fecha Ultimo Estado:</span> {email.fecha}
-                </div>
-                <div className="flex items-center">
-                  <span className="font-medium mr-2">Estado:</span>
-                  <span className={`text-white text-sm px-3 py-0.5 rounded-full ${getStatusBgColor(email.estado)}`}>
-                    {email.estado}
-                  </span>
-                </div>
-              </div>
+                  <div className="mr-4">
+                    <div>
+                      <span className="font-medium">Fecha Ultimo Estado:</span> {email.fecha}
+                    </div>
+                    <div className="flex items-center">
+                      <span className="font-medium mr-2">Estado:</span>
+                      <span className={`text-white text-sm px-3 py-0.5 rounded-full ${getStatusBgColor(email.estado)}`}>
+                        {email.estado}
+                      </span>
+                    </div>
+                  </div>
 
-              <div>
-                <Button variant="ghost" className="text-gray-400 hover:text-gray-600">
-                  <Download className="h-6 w-6" />
-                </Button>
-              </div>
-            </div>
-          ))}
+                  <div>
+                    <Button variant="ghost" className="text-gray-400 hover:text-gray-600">
+                      <Download className="h-6 w-6" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
         </div>
       </div>
     </div>
   )
 }
-

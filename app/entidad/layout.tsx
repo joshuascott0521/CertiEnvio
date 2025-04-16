@@ -1,6 +1,11 @@
+import type { ReactNode } from "react"
 import { DashboardNav } from "@/components/dashboard-nav"
 
-export default function EntidadLayout({ children }) {
+interface EntidadLayoutProps {
+  children: ReactNode
+}
+
+export default function EntidadLayout({ children }: EntidadLayoutProps) {
   return (
     <div className="min-h-screen bg-white flex">
       <DashboardNav />
@@ -10,4 +15,3 @@ export default function EntidadLayout({ children }) {
     </div>
   )
 }
-

@@ -1,4 +1,10 @@
 import { DashboardHeader } from "@/components/dashboard-header"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Envia+ | Dashboard",
+  description: "Panel principal del sistema Envia+",
+}
 
 export default function DashboardPage() {
   return (
@@ -11,4 +17,3 @@ export default function DashboardPage() {
     </div>
   )
 }
-

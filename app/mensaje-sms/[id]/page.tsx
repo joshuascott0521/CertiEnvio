@@ -1,11 +1,30 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 import { Mail, MessageSquare, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+interface MessageData {
+  id: number
+  entidad: string
+  aplicativo: string
+  remitente: string
+  destinatario: string
+  correoDestinatario: string
+  asunto: string
+  fecha: string
+  estado: string
+  celular: string
+  contenido: string
+  historial: Array<{
+    estado: string
+    fecha: string
+  }>
+}
+
 // Datos de ejemplo para el mensaje
-const messageData = {
+const messageData: MessageData = {
   id: 1,
   entidad: "Alcaldía de Baranca",
   aplicativo: "PQR+",
@@ -23,15 +42,51 @@ const messageData = {
   ],
 }
 
-export default function MensajeSMSPage({ params }) {
+interface MensajeSMSPageProps {
+  params: {
+    id: string
+  }
+}
+
+export default function MensajeSMSPage({ params }: MensajeSMSPageProps) {
   const router = useRouter()
   const id = Number.parseInt(params.id)
+  const [loading, setLoading] = useState(true)
+  const [message, setMessage] = useState<MessageData | null>(null)
 
-  // En una aplicación real, aquí cargarías los datos del mensaje según el ID
-  // Por ahora usamos los datos de ejemplo
+  useEffect(() => {
+    // Simular carga de datos
+    const timer = setTimeout(() => {
+      setMessage(messageData)
+      setLoading(false)
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [id])
 
   const handleBack = () => {
     router.back()
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <header className="bg-sky-500 text-white p-4 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <h1 className="text-2xl font-bold">Bienvenido a Envia+</h1>
+          </div>
+          <div className="flex items-center">
+            <Mail className="h-8 w-8 text-white" />
+            <span className="text-3xl font-bold">+</span>
+          </div>
+        </header>
+        <div className="flex-1 p-6 max-w-6xl mx-auto w-full">
+          <div className="flex items-center space-x-4 mb-6">
+            <div className="h-6 w-6 rounded-full border-2 border-t-transparent border-sky-500 animate-spin"></div>
+            <p>Cargando mensaje...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -59,10 +114,10 @@ export default function MensajeSMSPage({ params }) {
             <div className="bg-gray-200 rounded-full p-2 mr-3">
               <MessageSquare className="h-6 w-6 text-gray-500" />
             </div>
-            <h2 className="text-xl font-bold flex-1">Asunto: {messageData.asunto}</h2>
+            <h2 className="text-xl font-bold flex-1">Asunto: {message?.asunto}</h2>
             <div className="flex flex-col items-end">
               <div className="bg-green-500 text-white px-4 py-1 rounded-md font-medium">NOTIFICADO</div>
-              <div className="text-sm mt-1">Fecha: {messageData.fecha}</div>
+              <div className="text-sm mt-1">Fecha: {message?.fecha}</div>
             </div>
           </div>
 
@@ -72,13 +127,13 @@ export default function MensajeSMSPage({ params }) {
               <h3 className="font-bold mb-2">Remitente</h3>
               <div className="space-y-2">
                 <div>
-                  <span className="font-medium">Entidad:</span> {messageData.entidad}
+                  <span className="font-medium">Entidad:</span> {message?.entidad}
                 </div>
                 <div>
-                  <span className="font-medium">Aplicativo:</span> {messageData.aplicativo}
+                  <span className="font-medium">Aplicativo:</span> {message?.aplicativo}
                 </div>
                 <div>
-                  <span className="font-medium">Correo:</span> {messageData.remitente}
+                  <span className="font-medium">Correo:</span> {message?.remitente}
                 </div>
               </div>
             </div>
@@ -87,13 +142,13 @@ export default function MensajeSMSPage({ params }) {
               <h3 className="font-bold mb-2">Destinatario</h3>
               <div className="space-y-2">
                 <div>
-                  <span className="font-medium">Nombre Destinatario:</span> {messageData.destinatario}
+                  <span className="font-medium">Nombre Destinatario:</span> {message?.destinatario}
                 </div>
                 <div>
-                  <span className="font-medium">Celular:</span> {messageData.celular}
+                  <span className="font-medium">Celular:</span> {message?.celular}
                 </div>
                 <div>
-                  <span className="font-medium">Correo Destinatario:</span> {messageData.correoDestinatario}
+                  <span className="font-medium">Correo Destinatario:</span> {message?.correoDestinatario}
                 </div>
               </div>
             </div>
@@ -123,7 +178,7 @@ export default function MensajeSMSPage({ params }) {
                       </div>
                     </div>
 
-                    <div className="mt-40 bg-gray-100 p-3 rounded-lg text-xs">{messageData.contenido}</div>
+                    <div className="mt-40 bg-gray-100 p-3 rounded-lg text-xs">{message?.contenido}</div>
 
                     <div className="absolute bottom-4 left-0 right-0 flex items-center px-4">
                       <div className="flex-1 h-8 bg-gray-100 rounded-full flex items-center px-3 text-xs text-gray-400">
@@ -138,7 +193,7 @@ export default function MensajeSMSPage({ params }) {
             <div className="border rounded-lg p-4">
               <h3 className="font-bold mb-4">Cronología SMS</h3>
               <div className="space-y-6">
-                {messageData.historial.map((item, index) => (
+                {message?.historial.map((item, index) => (
                   <div key={index} className="flex items-center">
                     <div className="bg-sky-100 rounded-full p-2 mr-3">
                       <Mail className={`h-5 w-5 ${item.estado === "Enviado" ? "text-sky-500" : "text-green-500"}`} />
@@ -167,4 +222,3 @@ export default function MensajeSMSPage({ params }) {
     </div>
   )
 }
-
