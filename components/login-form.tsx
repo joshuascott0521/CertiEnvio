@@ -71,6 +71,7 @@ export function LoginForm() {
 
       if (rememberMe && data.Token) {
         localStorage.setItem("authToken", data.Token);
+        localStorage.setItem("userId", data.Id);
       }
 
       startTransition(() => {
