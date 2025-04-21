@@ -210,19 +210,23 @@ export default function MensajeSMSPage({ params }: MensajeSMSPageProps) {
                 </div>
               </Card>
               {/* Botón de descarga */}
-              <div className="flex justify-center p-5">
-                <Button className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-3 shadow-md transition">
-                  <div className="bg-white rounded-full p-2">
-                    <FileText className="h-5 w-5 text-green-500" />
-                  </div>
-                  Descargar Certificado
-                </Button>
+              <div className="flex items-center justify-center w-full p-4">
+                <button className="flex items-center bg-green-500 text-white rounded-full hover:bg-green-600 transition-all max-w-full sm:max-w-fit shadow-md">
 
+                  {/* Ícono PDF */}
+                  <span className="flex items-center justify-center p-2 sm:p-3 rounded-full bg-green-500">
+                    <FileText className="h-5 w-5 sm:h-6 sm:w-6" />
+                  </span>
+
+                  {/* Texto */}
+                  <span className="px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 font-semibold text-sm sm:text-base md:text-lg whitespace-nowrap">
+                    Descargar Certificado
+                  </span>
+                </button>
               </div>
+
             </div>
           </div>
-
-
         </div>
       </div>
     </div>
