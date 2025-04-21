@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Mail, MessageSquare, X } from "lucide-react"
+import { Mail, MessageCircle, FileText, Mic, CirclePlus, Wifi, Signal, Battery } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 
 interface MessageData {
   id: number
@@ -26,16 +27,16 @@ interface MessageData {
 // Datos de ejemplo para el mensaje
 const messageData: MessageData = {
   id: 1,
-  entidad: "Alcaldía de Baranca",
+  entidad: "Alcaldía de Barranca",
   aplicativo: "PQR+",
   remitente: "Alcaldia@prueba.com",
   destinatario: "Andrés Moreno Pérez",
   correoDestinatario: "Andres@prueba.com",
-  asunto: "ASIGNANCION DE NUEVO PQR",
+  asunto: "ASIGNACIÓN DE NUEVO PQR",
   fecha: "31/12/2025",
   estado: "Notificado",
   celular: "3112343344",
-  contenido: "Se le ha asignado un PQR con radicado No. 20231025 de la secretaria de hacienda municipal de Baranca",
+  contenido: "Se le ha asignado un PQR con radicado No. 20231025 de la secretaria de hacienda municipal de Barranca",
   historial: [
     { estado: "Enviado", fecha: "31/12/2025" },
     { estado: "Notificado", fecha: "31/12/2025" },
@@ -103,120 +104,125 @@ export default function MensajeSMSPage({ params }: MensajeSMSPageProps) {
       </header>
 
       {/* Contenido */}
-      <div className="flex-1 p-6 max-w-6xl mx-auto w-full">
+      <div className="flex-1 p-5 w-full bg-gray-50">
         <div className="relative">
-          <Button variant="outline" size="icon" className="absolute top-0 right-0 rounded-full" onClick={handleBack}>
-            <X className="h-4 w-4" />
-          </Button>
-
           {/* Encabezado del mensaje */}
-          <div className="flex items-center mb-4">
-            <div className="bg-gray-200 rounded-full p-2 mr-3">
-              <MessageSquare className="h-6 w-6 text-gray-500" />
-            </div>
-            <h2 className="text-xl font-bold flex-1">Asunto: {message?.asunto}</h2>
+          <div className="flex items-center">
+            <img src="/3.svg" alt="Logo-sms" className="w-10 h-10" />
+            <h2 className="pl-2 text-xl font-bold flex-1">Asunto: {message?.asunto}</h2>
             <div className="flex flex-col items-end">
-              <div className="bg-green-500 text-white px-4 py-1 rounded-md font-medium">NOTIFICADO</div>
+              <div className="bg-green-600 text-white px-4 py-1 rounded-md font-medium">NOTIFICADO</div>
               <div className="text-sm mt-1">Fecha: {message?.fecha}</div>
             </div>
           </div>
+          <hr className="border-b border-gray-300 my-4" />
+
 
           {/* Información del remitente y destinatario */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="border rounded-lg p-4">
-              <h3 className="font-bold mb-2">Remitente</h3>
-              <div className="space-y-2">
-                <div>
-                  <span className="font-medium">Entidad:</span> {message?.entidad}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+            <Card className="rounded-xl">
+              <h3 className="px-3 py-2 font-bold">Remitente</h3>
+              <CardContent className="pb-2 px-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div><span className="font-medium">Entidad:</span> {message?.entidad}</div>
+                  <div><span className="font-medium">Aplicativo:</span> {message?.aplicativo}</div>
+                  <div><span className="font-medium">Correo:</span> {message?.remitente}</div>
                 </div>
-                <div>
-                  <span className="font-medium">Aplicativo:</span> {message?.aplicativo}
+              </CardContent>
+            </Card>
+            <Card className="rounded-xl">
+              <h3 className="font-bold px-3 py-2">Destinatario</h3>
+              <CardContent className="pb-2 px-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div><span className="font-medium">Nombre Destinatario:</span> {message?.destinatario}</div>
+                  <div><span className="font-medium">Celular:</span> {message?.celular}</div>
+                  <div><span className="font-medium">Correo Destinatario:</span> {message?.correoDestinatario}</div>
                 </div>
-                <div>
-                  <span className="font-medium">Correo:</span> {message?.remitente}
-                </div>
-              </div>
-            </div>
-
-            <div className="border rounded-lg p-4">
-              <h3 className="font-bold mb-2">Destinatario</h3>
-              <div className="space-y-2">
-                <div>
-                  <span className="font-medium">Nombre Destinatario:</span> {message?.destinatario}
-                </div>
-                <div>
-                  <span className="font-medium">Celular:</span> {message?.celular}
-                </div>
-                <div>
-                  <span className="font-medium">Correo Destinatario:</span> {message?.correoDestinatario}
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Contenido del SMS */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="md:col-span-2 border rounded-lg p-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-7 mb-3">
+            <Card className="md:col-span-4 py-3 px-4">
               <h3 className="font-bold mb-4">Contenido SMS</h3>
-              <div className="flex justify-center">
-                <div className="relative w-64 h-[400px] border-8 border-gray-300 rounded-3xl overflow-hidden bg-white">
-                  {/* Barra de estado del teléfono */}
-                  <div className="h-6 bg-gray-100 flex items-center justify-between px-4 text-xs">
-                    <span>9:30</span>
-                    <div className="flex items-center space-x-1">
-                      <div className="w-4 h-2 bg-gray-400 rounded-sm"></div>
-                      <div className="w-1 h-2 bg-gray-400 rounded-sm"></div>
-                      <div className="w-1 h-2 bg-gray-400 rounded-sm"></div>
-                    </div>
-                  </div>
-
-                  {/* Contenido del mensaje */}
-                  <div className="p-4">
-                    <div className="flex justify-center mb-4">
-                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-xs">
-                        300?877
+              <CardContent>
+                <div className="flex justify-center">
+                  {/*Telefono*/}
+                  <div className="relative w-[260px] h-[500px] bg-[url('/phone.jpg')] bg-cover bg-center bg-no-repeat">
+                    {/* Barra de estado superior */}
+                    <div className="absolute top-6 left-5 right-5 flex items-center justify-between px-2 text-[10px] text-gray-700">
+                      <span className="font-semibold">9:30</span>
+                      <div className="flex items-center space-x-1">
+                        <Signal className="w-4 h-4" />
+                        <Wifi className="w-4 h-4" />
+                        <Battery className="w-4 h-4" />
                       </div>
                     </div>
+                    <div className="absolute top-14 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-xs font-bold space-y-1">
+                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center shadow-md">
+                        <img
+                          src="/4.svg"
+                          alt="User"
+                          className="w-6 h-6 object-contain"
+                        />
+                      </div>
+                      <span className="text-[11px] text-gray-700">{message?.celular}</span>
+                    </div>
+                    <hr className="absolute top-28 left-5 right-5 border-t border-gray-150 mt-2" />
+                    {/* Contenido del mensaje con scroll */}
+                    <div className="scroll-message absolute bottom-20 left-7 right-7 bg-gray-50 text-black text-xs p-3 rounded-lg shadow max-h-40 overflow-y-auto">
+                      {message?.contenido}
+                    </div>
 
-                    <div className="mt-40 bg-gray-100 p-3 rounded-lg text-xs">{message?.contenido}</div>
 
-                    <div className="absolute bottom-4 left-0 right-0 flex items-center px-4">
-                      <div className="flex-1 h-8 bg-gray-100 rounded-full flex items-center px-3 text-xs text-gray-400">
+
+
+
+                    {/* Barra de mensaje */}
+                    <div className="absolute bottom-6 left-7 right-7 flex items-center justify-between border border-gray-300 rounded-full px-4 py-[6px] bg-white shadow-sm">
+                      <CirclePlus className="text-gray-500" />
+                      <span className="mx-3 text-xs text-gray-400 whitespace-nowrap">
                         Mensaje de Texto SMS
-                      </div>
+                      </span>
+                      <Mic className="text-gray-500" />
                     </div>
+
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="border rounded-lg p-4">
-              <h3 className="font-bold mb-4">Cronología SMS</h3>
-              <div className="space-y-6">
-                {message?.historial.map((item, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className="bg-sky-100 rounded-full p-2 mr-3">
-                      <Mail className={`h-5 w-5 ${item.estado === "Enviado" ? "text-sky-500" : "text-green-500"}`} />
+              </CardContent>
+            </Card>
+            <div className="">
+              <Card className="pt-2 px-4 pb-4">
+                <h3 className="font-bold mb-4">Cronología SMS</h3>
+                <div className="space-y-6">
+                  {message?.historial.map((item, index) => (
+                    <div key={index} className="flex items-center">
+                      <div className="bg-sky-100 rounded-full p-2 mr-3">
+                        <Mail className={`h-5 w-5 ${item.estado === "Enviado" ? "text-sky-500" : "text-green-500"}`} />
+                      </div>
+                      <div>
+                        <div className="font-medium">{item.estado}</div>
+                        <div className="text-sm text-gray-500">Fecha: {item.fecha}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-medium">{item.estado}</div>
-                      <div className="text-sm text-gray-500">Fecha: {item.fecha}</div>
-                    </div>
+                  ))}
+                </div>
+              </Card>
+              {/* Botón de descarga */}
+              <div className="flex justify-center p-5">
+                <Button className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded-full flex items-center gap-3 shadow-md transition">
+                  <div className="bg-white rounded-full p-2">
+                    <FileText className="h-5 w-5 text-green-500" />
                   </div>
-                ))}
+                  Descargar Certificado
+                </Button>
+
               </div>
             </div>
           </div>
 
-          {/* Botón de descarga */}
-          <div className="flex justify-end">
-            <Button className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2">
-              <div className="bg-white rounded-full p-1">
-                <Mail className="h-4 w-4 text-green-500" />
-              </div>
-              Descargar Certificado
-            </Button>
-          </div>
+
         </div>
       </div>
     </div>

@@ -204,7 +204,7 @@ export default function EnvioSMSPage() {
                 >
                   <div className="flex">
                     <div className="mr-4">
-                      <MessageSquare className="h-10 w-10 text-gray-400" />
+                      <img src="/3.svg" alt="Logo-sms" className="w-10 h-10"/>
                     </div>
                     <div>
                       <div>

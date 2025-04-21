@@ -1,17 +1,41 @@
 import { DashboardHeader } from "@/components/dashboard-header"
-import { SkeletonCard } from "@/components/ui/skeleton-card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function Loading() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <DashboardHeader title="Usuario" breadcrumb="Envia+ / Usuario" />
-      <div className="p-4 max-w-screen-xl mx-auto bg-gray-50">
-        <h2 className="text-2xl font-bold">Mi Cuenta</h2>
-        <div className="space-y-4 mt-4">
-          <SkeletonCard rows={4} />
-          <SkeletonCard rows={3} />
+      <main className="flex-grow bg-gray-50">
+        <div className="p-4 max-w-screen-xl w-full mx-auto">
+          <h2 className="text-2xl font-bold mb-4">Mi Cuenta</h2>
+
+          {/* Card de usuario */}
+          <div className="rounded-xl p-4 bg-white shadow space-y-4">
+            <Skeleton className="h-6 w-1/4 mb-2" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full rounded-md" />
+              ))}
+            </div>
+            <div className="flex justify-end mt-4">
+              <Skeleton className="h-10 w-32 rounded-md" />
+            </div>
+          </div>
+
+          {/* Card de contraseña */}
+          <div className="rounded-xl p-4 bg-white shadow mt-6 space-y-4">
+            <Skeleton className="h-6 w-1/4 mb-2" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full rounded-md" />
+              ))}
+            </div>
+            <div className="flex justify-end mt-4">
+              <Skeleton className="h-10 w-32 rounded-md" />
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
