@@ -1,11 +1,11 @@
-import type { ReactNode } from "react"
-import { Suspense } from "react"
-import { DashboardNav } from "@/components/dashboard-nav"
-import { X } from "lucide-react"
-import { Skeleton } from "@/components/ui/skeleton"
+import type { ReactNode } from "react";
+import { Suspense } from "react";
+import { DashboardNav } from "@/components/dashboard-nav";
+import { X } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DashboardLayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 function DashboardSkeleton() {
@@ -21,7 +21,7 @@ function DashboardSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -39,5 +39,5 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </main>
       </div>
     </div>
-  )
+  );
 }

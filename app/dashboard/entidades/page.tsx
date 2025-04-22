@@ -1,23 +1,27 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import { Building2, Edit, PlusCircle } from "lucide-react"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { Button } from "@/components/ui/button"
-import { useState, useEffect, useTransition } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
+import { useRouter } from "next/navigation";
+import { Building2, Edit, PlusCircle } from "lucide-react";
+import { DashboardHeader } from "@/components/dashboard-header";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect, useTransition } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Entity } from "@/types";
 
-interface Entity {
-  id: number
-  name: string
-  nit: string
-  type: string
-  address: string
-  city?: string
-  email: string
-  phone: string
-  website?: string
-}
+type Props = {
+  Entity: Entity;
+};
+// interface Entity {
+//   id: number
+//   name: string
+//   nit: string
+//   type: string
+//   address: string
+//   city?: string
+//   email: string
+//   phone: string
+//   website?: string
+// }
 
 const entities: Entity[] = [
   {
@@ -40,34 +44,34 @@ const entities: Entity[] = [
     phone: "324567345",
     website: "www.baranca.com",
   },
-]
+];
 
 export default function EntidadesPage() {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-  const [loading, setLoading] = useState(true)
-  const [data, setData] = useState<Entity[]>([])
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<Entity[]>([]);
 
   useEffect(() => {
     // Simular carga de datos
     const timer = setTimeout(() => {
-      setData(entities)
-      setLoading(false)
-    }, 1000)
-    return () => clearTimeout(timer)
-  }, [])
+      setData(entities);
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleAddEntity = () => {
     startTransition(() => {
-      router.push("/entidad/nueva")
-    })
-  }
+      router.push("/entidad/nueva");
+    });
+  };
 
   const handleEditEntity = (id: number) => {
     startTransition(() => {
-      router.push(`/entidad/editar/${id}`)
-    })
-  }
+      router.push(`/entidad/editar/${id}`);
+    });
+  };
 
   return (
     <div>
@@ -95,7 +99,10 @@ export default function EntidadesPage() {
           {loading
             ? // Skeleton loader para entidades
               Array.from({ length: 2 }).map((_, i) => (
-                <div key={i} className="border rounded-lg p-4 flex justify-between items-center">
+                <div
+                  key={i}
+                  className="border rounded-lg p-4 flex justify-between items-center"
+                >
                   <div className="flex">
                     <div className="mr-4">
                       <Skeleton className="h-10 w-10 rounded-md" />
@@ -124,15 +131,23 @@ export default function EntidadesPage() {
               ))
             : // Datos reales
               data.map((entity) => (
-                <div key={entity.id} className="border rounded-lg p-4 flex justify-between items-center">
+                <div
+                  key={entity.id}
+                  className="border rounded-lg p-4 flex justify-between items-center"
+                >
                   <div className="flex">
                     <div className="mr-4">
                       <Building2 className="h-10 w-10 text-gray-500" />
                     </div>
                     <div>
-                      {entity.id !== 1 && <div className="text-sm text-gray-500">Id: {entity.id}</div>}
+                      {entity.id !== 1 && (
+                        <div className="text-sm text-gray-500">
+                          Id: {entity.id}
+                        </div>
+                      )}
                       <div>
-                        <span className="font-medium">Entidad:</span> {entity.name}
+                        <span className="font-medium">Entidad:</span>{" "}
+                        {entity.name}
                       </div>
                       <div>
                         <span className="font-medium">NIT:</span> {entity.nit}
@@ -145,25 +160,30 @@ export default function EntidadesPage() {
                       <span className="font-medium">Tipo:</span> {entity.type}
                     </div>
                     <div>
-                      <span className="font-medium">Dirección:</span> {entity.address}
+                      <span className="font-medium">Dirección:</span>{" "}
+                      {entity.address}
                     </div>
                     {entity.city && (
                       <div>
-                        <span className="font-medium">Ciudad:</span> {entity.city}
+                        <span className="font-medium">Ciudad:</span>{" "}
+                        {entity.city}
                       </div>
                     )}
                   </div>
 
                   <div className="mr-4">
                     <div>
-                      <span className="font-medium">Correo:</span> {entity.email}
+                      <span className="font-medium">Correo:</span>{" "}
+                      {entity.email}
                     </div>
                     <div>
-                      <span className="font-medium">Celular:</span> {entity.phone}
+                      <span className="font-medium">Celular:</span>{" "}
+                      {entity.phone}
                     </div>
                     {entity.website && (
                       <div>
-                        <span className="font-medium">Página WEB:</span> {entity.website}
+                        <span className="font-medium">Página WEB:</span>{" "}
+                        {entity.website}
                       </div>
                     )}
                   </div>
@@ -183,5 +203,5 @@ export default function EntidadesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

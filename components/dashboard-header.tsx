@@ -1,10 +1,15 @@
-import { ChevronDown, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { ChevronDown, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface DashboardHeaderProps {
-  title: string
-  breadcrumb?: string
+  title: string;
+  breadcrumb?: string;
 }
 
 export function DashboardHeader({ title, breadcrumb }: DashboardHeaderProps) {
@@ -16,7 +21,10 @@ export function DashboardHeader({ title, breadcrumb }: DashboardHeaderProps) {
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="text-white hover:bg-sky-600 flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            className="text-white hover:bg-sky-600 flex items-center space-x-2"
+          >
             <div className="flex items-center">
               <div className="bg-white rounded-full p-1 mr-2">
                 <User className="h-6 w-6 text-sky-500" />
@@ -30,10 +38,9 @@ export function DashboardHeader({ title, breadcrumb }: DashboardHeaderProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>Perfil</DropdownMenuItem>
           <DropdownMenuItem>Cerrar Sesión</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
-  )
+  );
 }
