@@ -1,3 +1,5 @@
+"use client";
+
 import { ChevronDown, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "../contexts/auth-context";
 
 interface DashboardHeaderProps {
   title: string;
@@ -13,6 +16,7 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ title, breadcrumb }: DashboardHeaderProps) {
+  const { logout } = useAuth();
   return (
     <header className="h-16 bg-sky-500 text-white px-6 flex items-center justify-between">
       <div>
@@ -38,7 +42,7 @@ export function DashboardHeader({ title, breadcrumb }: DashboardHeaderProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>Cerrar Sesión</DropdownMenuItem>
+          <DropdownMenuItem onClick={logout}>Cerrar Sesión</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

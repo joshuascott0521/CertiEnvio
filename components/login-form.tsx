@@ -1,9 +1,10 @@
 "use client";
 
 import type React from "react";
+import Cookies from "js-cookie";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
@@ -16,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormErrors } from "../types";
 import { authService } from "../services/api";
+import { useAuth } from "@/contexts/auth-context";
 
 type Props = {
   FormErrors: FormErrors;
@@ -23,6 +25,10 @@ type Props = {
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirect") || "/dashboard";
+
+  const { login } = useAuth();
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -59,24 +65,21 @@ export function LoginForm() {
     setErrors({});
 
     try {
-      const response = await authService.login(email, password);
+      const success = await login(email, password, rememberMe);
 
-      if (!response.success || !response.data.Token) {
-        setErrors({ general: response.error || "Credenciales incorrectas" });
-        return;
+      if (success) {
+        startTransition(() => {
+          router.push(redirectPath);
+        });
+        console.log("💗💗💗💗", success);
+      } else {
+        setErrors({
+          general: "Credenciales inválidas. Por favor, intente nuevamente.",
+        });
       }
-  
-      // Login válido
-      localStorage.setItem("authToken", response.data.Token);
-      localStorage.setItem("userId", response.data.Id);
-  
-      startTransition(() => {
-        router.push("/dashboard");
-      });
     } catch (error: any) {
       const message =
-        error?.response?.data?.message ||
-        "Error al iniciar sesión. Intente nuevamente.";
+        error?.message || "Error al iniciar sesión. Intente nuevamente.";
       setErrors({ general: message });
     } finally {
       setLoading(false);
