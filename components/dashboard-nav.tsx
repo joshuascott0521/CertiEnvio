@@ -84,7 +84,7 @@ export function DashboardNav() {
       <div className="p-4">
         <div className="flex items-center justify-center mb-6 pt-2">
           <img
-            src="/logo.png"
+            src="/CertiLogo.png"
             alt="Logo CertiEnvíos"
             className="w-[150px] h-auto object-contain pb-2"
           />

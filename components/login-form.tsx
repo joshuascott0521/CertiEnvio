@@ -17,11 +17,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormErrors } from "../types";
 import { authService } from "../services/api";
 
-// interface FormErrors {
-//   email?: string
-//   password?: string
-//   general?: string
-// }
 type Props = {
   FormErrors: FormErrors;
 };
@@ -66,12 +61,15 @@ export function LoginForm() {
     try {
       const response = await authService.login(email, password);
 
-      const data = response.data;
-
-      if (rememberMe && data.Token) {
-        localStorage.setItem("authToken", data.Token);
+      if (!response.success || !response.data.Token) {
+        setErrors({ general: response.error || "Credenciales incorrectas" });
+        return;
       }
-
+  
+      // Login válido
+      localStorage.setItem("authToken", response.data.Token);
+      localStorage.setItem("userId", response.data.Id);
+  
       startTransition(() => {
         router.push("/dashboard");
       });
@@ -90,7 +88,7 @@ export function LoginForm() {
       <CardHeader className="p-0 pt-0 flex justify-center items-center">
         <CardTitle className="p-0 m-0">
           <img
-            src="/logo.png"
+            src="/CertiLogo.png"
             alt="Logo CertiEnvíos"
             className="w-[250px] h-auto object-contain pb-2"
           />

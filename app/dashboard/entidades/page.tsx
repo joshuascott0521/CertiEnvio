@@ -11,17 +11,7 @@ import { Entity } from "@/types";
 type Props = {
   Entity: Entity;
 };
-// interface Entity {
-//   id: number
-//   name: string
-//   nit: string
-//   type: string
-//   address: string
-//   city?: string
-//   email: string
-//   phone: string
-//   website?: string
-// }
+
 
 const entities: Entity[] = [
   {

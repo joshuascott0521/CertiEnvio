@@ -1,11 +1,15 @@
 export interface User {
-  id: number;
-  nombre: string;
-  documento: string;
-  celular: string;
-  email: string;
-  rol: string;
+  Id: string;
+  Documento: string;
+  Nombre: string;
+  TipoUsuId: string;
+  TipoUsuarioNombre: string;
+  Role: string;
+  Email: string;
+  Celular: string;
+  Estado: string;
 }
+
 
 export interface Entity {
   id: number;

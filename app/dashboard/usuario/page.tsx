@@ -6,6 +6,8 @@ import { FloatingLabel } from "@/components/ui/FloatingLabel";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton"
+import { FormErrors } from "@/types";
+import { userService } from "@/services/api";
 
 export default function UsuarioPage() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -13,11 +15,15 @@ export default function UsuarioPage() {
   const [identificacion, setIdentificacion] = useState("");
   const [celular, setCelular] = useState("");
   const [email, setEmail] = useState("");
+  const [rol, setRol] = useState("");
+  const [tipoUsuId, setTipoUsuId] = useState("");
+  const [tipoUsuName, setTipoUsuName] = useState("")
+  const [estado, setEstado] = useState("");
   const [actualPassword, setActualPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirNewPassword, setConfirNewPassword] = useState("");
-  const [tipoUsuId, setTipoUsuId] = useState("");
-  const [estado, setEstado] = useState("");
+
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,22 +35,18 @@ export default function UsuarioPage() {
 
         if (!token || !userId) return;
 
-        const response = await axios.get(
-          `https://apienviaplusdev.creapptech.com/Usuario/Get/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const { success, data, error } = await userService.getById(userId!);
+        if (!success) throw new Error(error);
 
-        const data = response.data;
         setNombre(data.Nombre || "");
         setIdentificacion(data.Documento || "");
         setCelular(data.Celular || "");
         setEmail(data.Email || "");
+        setRol(data.Role || "");
         setTipoUsuId(data.TipoUsuId || "");
+        setTipoUsuName(data.TipoUsuarioNombre || "");
         setEstado(data.Estado || "");
+
       } catch (error) {
         console.error("Error al obtener datos del usuario:", error);
       } finally {
@@ -58,31 +60,22 @@ export default function UsuarioPage() {
   const actualizarDatos = async () => {
     try {
       setIsUpdating(true);
-      const token = localStorage.getItem("authToken");
       const userId = localStorage.getItem("userId");
 
-      if (!token || !userId) return;
+      if (!userId) return;
 
       const payload = {
         Id: userId,
-        Nombre: nombre,
         Documento: identificacion,
-        Celular: celular,
-        Email: email,
+        Nombre: nombre,
         TipoUsuId: tipoUsuId,
+        Email: email,
+        Celular: celular,
         Estado: estado,
       };
 
-      await axios.put(
-        `https://apienviaplusdev.creapptech.com/Usuario/Update`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const {success, error} = await userService.updateProfile(payload);
+      if(!success) throw new Error(error);
     } catch (error) {
       console.error("Error al actualizar datos:", error);
     } finally {
@@ -93,10 +86,9 @@ export default function UsuarioPage() {
   const cambioPassword = async () => {
     try {
       setIsUpdating(true);
-      const token = localStorage.getItem("authToken");
       const userId = localStorage.getItem("userId");
 
-      if (!token || !userId) return;
+      if (!userId) return;
 
       const payload = {
         Id: userId,
@@ -105,16 +97,8 @@ export default function UsuarioPage() {
         PasswordConfirmacion: confirNewPassword,
       };
 
-      await axios.put(
-        `https://apienviaplusdev.creapptech.com/Usuario/UpdatePassword`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const {success, error} = await userService.changePassword(payload);
+      if(!success) throw new Error(error);
 
       setActualPassword("");
       setNewPassword("");

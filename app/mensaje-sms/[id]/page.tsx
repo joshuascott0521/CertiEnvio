@@ -115,7 +115,7 @@ export default function MensajeSMSPage({ params }: MensajeSMSPageProps) {
               <div className="text-sm mt-1">Fecha: {message?.fecha}</div>
             </div>
           </div>
-          <hr className="border-b border-gray-300 my-4" />
+          <hr className="border-b border-gray-300 my-2" />
 
 
           {/* Información del remitente y destinatario */}

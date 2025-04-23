@@ -29,16 +29,16 @@ api.interceptors.request.use(
 
 // Servicios de autenticación
 export const authService = {
-  login: async (email: string, password: string): Promise<ApiResponse<{ Token: string }>> => {
+  login: async (email: string, password: string): Promise<ApiResponse<{ Token: string; Id: string }>> => {
     try {
-      const response = await api.post("/Usuario/Login", { Email: email, Password: password })
-      return { success: true, data: response.data }
+      const response = await api.post("/Usuario/Login", { Email: email, Password: password });
+      return { success: true, data: response.data };
     } catch (error: any) {
       return {
         success: false,
-        data: { Token: "" },
+        data: { Token: "", Id: "" },
         error: error.response?.data?.message || "Error al iniciar sesión",
-      }
+      };
     }
   },
 
@@ -71,6 +71,19 @@ export const userService = {
     }
   },
 
+  getById: async(id: string): Promise<ApiResponse<User>> =>{
+    try{
+      const response = await api.get(`/Usuario/Get/${id}`)
+      return {success: true, data: response.data}
+    }catch (error: any){
+      return{
+        success: false,
+        data: {} as User,
+        error: error.response?.data?.message || "Error al obtener usuario por ID"
+      }
+    }
+  },
+
   updateProfile: async (userData: Partial<User>): Promise<ApiResponse<User>> => {
     try {
       const response = await api.put("/Usuario/Update", userData)
@@ -84,10 +97,15 @@ export const userService = {
     }
   },
 
-  changePassword: async (currentPassword: string, newPassword: string): Promise<ApiResponse<null>> => {
+  changePassword: async (payload: {
+    Id: string;
+    PasswordAntigua: string;
+    PasswordNueva: string;
+    PasswordConfirmacion: string
+  }): Promise<ApiResponse<null>> => {
     try {
-      await api.post("/Usuario/ChangePassword", { CurrentPassword: currentPassword, NewPassword: newPassword })
-      return { success: true, data: null }
+      const response = await api.put("/Usuario/UpdatePassword", payload)
+      return { success: true, data: response.data }
     } catch (error: any) {
       return {
         success: false,

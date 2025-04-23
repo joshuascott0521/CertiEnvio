@@ -2,7 +2,7 @@ import { LoginForm } from "@/components/login-form"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Envia+ | Login",
+  title: "CertiEnvíos | Login",
   description: "Iniciar sesión en el sistema de envío de correos Envia+",
 }
 
