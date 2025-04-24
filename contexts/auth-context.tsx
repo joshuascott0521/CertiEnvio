@@ -75,6 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.success && response.data.Token) {
         localStorage.setItem("authToken", response.data.Token);
         localStorage.setItem("userId", response.data.Id);
+        localStorage.setItem("userName", response.data.Nombre);
+        localStorage.setItem("userType", response.data.TipoUsuId);
         // Guardar token en cookie con duración según "recordarme"
         const expirationDays = rememberMe
           ? COOKIE_DURATION_REMEMBER

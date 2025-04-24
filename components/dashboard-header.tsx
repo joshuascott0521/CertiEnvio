@@ -17,6 +17,8 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ title, breadcrumb }: DashboardHeaderProps) {
   const { logout } = useAuth();
+  const Usuario = localStorage.getItem("userName");
+  const Rol = localStorage.getItem("userType");
   return (
     <header className="h-16 bg-sky-500 text-white px-6 flex items-center justify-between">
       <div>
@@ -33,9 +35,9 @@ export function DashboardHeader({ title, breadcrumb }: DashboardHeaderProps) {
               <div className="bg-white rounded-full p-1 mr-2">
                 <User className="h-6 w-6 text-sky-500" />
               </div>
-              <div className="text-right">
-                <div className="font-medium">Ronald Moreno</div>
-                <div className="text-xs">Administrador</div>
+              <div className="text-center">
+                <div className="font-medium">{Usuario}</div>
+                <div className="text-xs">{Rol}</div>
               </div>
             </div>
             <ChevronDown className="h-4 w-4" />

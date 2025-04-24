@@ -45,7 +45,7 @@ export const authService = {
   login: async (
     email: string,
     password: string
-  ): Promise<ApiResponse<{ Token: string; Id: string }>> => {
+  ): Promise<ApiResponse<{ Token: string; Id: string; Nombre: string; TipoUsuId: string }>> => {
     try {
       const response = await api.post("/Usuario/Login", {
         Email: email,
@@ -55,7 +55,7 @@ export const authService = {
     } catch (error: any) {
       return {
         success: false,
-        data: { Token: "", Id: "" },
+        data: { Token: "", Id: "", Nombre: "", TipoUsuId: ""},
         error: error.response?.data?.message || "Error al iniciar sesión",
       };
     }
