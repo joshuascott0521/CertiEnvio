@@ -1,10 +1,13 @@
-import { DashboardHeader } from "@/components/dashboard-header"
-import { Skeleton } from "@/components/ui/skeleton"
+import { DashboardHeader } from "@/components/dashboard-header";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
     <div>
-      <DashboardHeader title="Envió Email SMS" breadcrumb="Envia+ / Envió Email SMS" />
+      <DashboardHeader
+        title="Envió Email SMS"
+        breadcrumb="Envia+ / Envió Email SMS"
+      />
       <div className="p-6">
         <h2 className="text-2xl font-bold">Envío de Correos SMS</h2>
 
@@ -15,11 +18,11 @@ export default function Loading() {
         </div>
 
         <div className="space-y-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+          {Array.from({ length: 10 }).map((_, i) => (
             <Skeleton key={i} className="h-24 w-full rounded-lg" />
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }

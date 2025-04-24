@@ -44,8 +44,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (token) {
           const response = await userService.getProfile();
           if (response.success) {
-            console.log();
-
             setUser(response.data);
             setIsAuthenticated(true);
           } else {
@@ -73,6 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authService.login(email, password);
       if (response.success && response.data.Token) {
+        console.log("krev melrkv elrvb ");
+
         localStorage.setItem("authToken", response.data.Token);
         localStorage.setItem("userId", response.data.Id);
         localStorage.setItem("userName", response.data.Nombre);
@@ -88,6 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         const userResponse = await userService.getProfile();
+        console.log("📌📌", userResponse);
+
         if (userResponse.success) {
           setUser(userResponse.data);
           setIsAuthenticated(true);

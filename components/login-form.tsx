@@ -71,7 +71,6 @@ export function LoginForm() {
         startTransition(() => {
           router.push(redirectPath);
         });
-        console.log("💗💗💗💗", success);
       } else {
         setErrors({
           general: "Credenciales inválidas. Por favor, intente nuevamente.",
