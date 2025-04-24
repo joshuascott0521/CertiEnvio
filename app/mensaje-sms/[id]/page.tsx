@@ -195,12 +195,18 @@ export default function MensajeSMSPage({ params }: MensajeSMSPageProps) {
             <div className="">
               <Card className="pt-2 px-4 pb-4">
                 <h3 className="font-bold mb-4">Cronología SMS</h3>
-                <div className="space-y-6">
+                <div className="relative space-y-6">
                   {message?.historial.map((item, index) => (
-                    <div key={index} className="flex items-center">
-                      <div className="bg-sky-100 rounded-full p-2 mr-3">
+                    <div key={index} className="relative flex items-start gap-3">
+                      {/* Línea punteada entre íconos excepto el último */}
+                      {index < message.historial.length - 1 && (
+                        <span className="absolute top-8 left-[17px] h-full border-l-2 border-dashed border-gray-400 z-0"></span>
+                      )}
+                      {/* Ícono */}
+                      <div className="relative z-10 bg-sky-100 rounded-full p-2">
                         <Mail className={`h-5 w-5 ${item.estado === "Enviado" ? "text-sky-500" : "text-green-500"}`} />
                       </div>
+                      {/* Texto */}
                       <div>
                         <div className="font-medium">{item.estado}</div>
                         <div className="text-sm text-gray-500">Fecha: {item.fecha}</div>
@@ -209,6 +215,7 @@ export default function MensajeSMSPage({ params }: MensajeSMSPageProps) {
                   ))}
                 </div>
               </Card>
+
               {/* Botón de descarga */}
               <div className="flex items-center justify-center w-full p-4">
                 <button className="flex items-center bg-green-500 text-white rounded-full hover:bg-green-600 transition-all max-w-full sm:max-w-fit shadow-md">
