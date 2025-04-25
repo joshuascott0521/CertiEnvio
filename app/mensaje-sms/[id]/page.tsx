@@ -1,8 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
-import { Mail, MessageCircle, FileText, Mic, CirclePlus, Wifi, Signal, Battery } from "lucide-react"
+import { useState, useEffect, use } from "react"
+import { Mail, FileText, Mic, CirclePlus, Wifi, Signal, Battery } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -49,9 +49,14 @@ interface MensajeSMSPageProps {
   }
 }
 
-export default function MensajeSMSPage({ params }: MensajeSMSPageProps) {
+export default function MensajeSMSPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const router = useRouter()
-  const id = Number.parseInt(params.id)
+  const { id } = use(params)
+  const parsedId = parseInt(id)
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState<MessageData | null>(null)
 
@@ -62,11 +67,9 @@ export default function MensajeSMSPage({ params }: MensajeSMSPageProps) {
       setLoading(false)
     }, 800)
     return () => clearTimeout(timer)
-  }, [id])
+  }, [parsedId])
 
-  const handleBack = () => {
-    router.back()
-  }
+  const handleBack = () => router.back()
 
   if (loading) {
     return (
