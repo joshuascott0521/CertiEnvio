@@ -26,6 +26,12 @@ export interface Entity {
   MunicipioCod: number;
   NombreMunicipio: string;
   Estado: number;
+  Imagenes?: Array<{
+    TipoImg: string;
+    Nombre: string;
+    Extension: string;
+    ImagenBase64: string;
+  }>;
 }
 
 export interface Message {

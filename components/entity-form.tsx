@@ -9,18 +9,6 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Entity } from "@/types"
 
-interface EntityData {
-  name?: string
-  nit?: string
-  aplicativo?: string
-  email?: string
-  celular?: string
-  direccion?: string
-  departamento?: string
-  municipio?: string
-  website?: string
-}
-
 interface EntityFormProps {
   isEditing?: boolean
   entityData?: Entity
@@ -31,16 +19,22 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   const [isPending, startTransition] = useTransition()
   const [isSaving, setIsSaving] = useState(false)
 
-  const [formData, setFormData] = useState<EntityData>({
-    name: "",
-    nit: "",
-    aplicativo: "",
-    email: "",
-    celular: "",
-    direccion: "",
-    departamento: "",
-    municipio: "",
-    website: "",
+  const [formData, setFormData] = useState<Entity>({
+    Id: 0,
+    Nombre: "",
+    NIT: "",
+    AplicativoId: 0,
+    NombreAplicativo: "",
+    Direccion: "",
+    Email: "",
+    Celular: "",
+    PaginaWeb: "",
+    DepartamentoCod: 0,
+    NombreDepartamento: "",
+    MunicipioCod: 0,
+    NombreMunicipio: "",
+    Estado: 0,
+    Imagenes: [],
   })
 
   const [logoFile, setLogoFile] = useState<File | null>(null)
@@ -51,21 +45,29 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   useEffect(() => {
     if (isEditing && entityData) {
       setFormData({
-        name: entityData.Nombre || "",
-        nit: entityData.NIT || "",
-        aplicativo: entityData.NombreAplicativo || "",
-        email: entityData.Email || "",
-        celular: entityData.Celular || "",
-        direccion: entityData.Direccion || "",
-        departamento: entityData.NombreDepartamento || "",
-        municipio: entityData.NombreMunicipio || "",
-        website: entityData.PaginaWeb || "",
-      })
-      setIsLoading(false)
+        Id: entityData.Id,
+        Nombre: entityData.Nombre || "",
+        NIT: entityData.NIT || "",
+        AplicativoId: entityData.AplicativoId || 0,
+        NombreAplicativo: entityData.NombreAplicativo || "",
+        Direccion: entityData.Direccion || "",
+        Email: entityData.Email || "",
+        Celular: entityData.Celular || "",
+        PaginaWeb: entityData.PaginaWeb || "",
+        DepartamentoCod: entityData.DepartamentoCod || 0,
+        NombreDepartamento: entityData.NombreDepartamento || "",
+        MunicipioCod: entityData.MunicipioCod || 0,
+        NombreMunicipio: entityData.NombreMunicipio || "",
+        Estado: entityData.Estado || 1,
+        Imagenes: entityData.Imagenes || []
+      });
+      setIsLoading(false);
     }
-  }, [isEditing, entityData])
+  }, [isEditing, entityData]);
 
-  const handleChange = (field: keyof EntityData, value: string) => {
+  console.log(formData);
+
+  const handleChange = (field: keyof Entity, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -75,15 +77,15 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
 
     try {
       const formDataToSend = new FormData()
-      formDataToSend.append('name', formData.name || "")
-      formDataToSend.append('nit', formData.nit || "")
-      formDataToSend.append('aplicativo', formData.aplicativo || "")
-      formDataToSend.append('email', formData.email || "")
-      formDataToSend.append('celular', formData.celular || "")
-      formDataToSend.append('direccion', formData.direccion || "")
-      formDataToSend.append('departamento', formData.departamento || "")
-      formDataToSend.append('municipio', formData.municipio || "")
-      formDataToSend.append('website', formData.website || "")
+      formDataToSend.append('name', formData.Nombre || "")
+      formDataToSend.append('nit', formData.NIT || "")
+      formDataToSend.append('aplicativo', formData.NombreAplicativo || "")
+      formDataToSend.append('email', formData.Email || "")
+      formDataToSend.append('celular', formData.Celular || "")
+      formDataToSend.append('direccion', formData.Direccion || "")
+      formDataToSend.append('departamento', formData.NombreDepartamento || "")
+      formDataToSend.append('municipio', formData.NombreMunicipio || "")
+      formDataToSend.append('website', formData.PaginaWeb || "")
 
       if (logoFile) {
         formDataToSend.append('logo', logoFile)
@@ -91,6 +93,8 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
       if (escudoFile) {
         formDataToSend.append('escudo', escudoFile)
       }
+
+
 
       // Aquí enviarías formDataToSend a tu API con fetch o axios
       console.log("Formulario listo para enviar:", formDataToSend)
@@ -131,21 +135,21 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
           <h3 className="text-lg font-medium">Datos de la entidad</h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Inputs */}
           <div className="space-y-2">
             <Label htmlFor="name">Nombre Entidad</Label>
-            <Input id="name" value={formData.name} onChange={(e) => handleChange("name", e.target.value)} disabled={isSaving || isPending} />
+            <Input id="name" value={formData.Nombre} onChange={(e) => handleChange("Nombre", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="nit">NIT Entidad</Label>
-            <Input id="nit" value={formData.nit} onChange={(e) => handleChange("nit", e.target.value)} disabled={isSaving || isPending} />
+            <Input id="nit" value={formData.NIT} onChange={(e) => handleChange("NIT", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="aplicativo">Aplicativo</Label>
-            <Select value={formData.aplicativo} onValueChange={(value) => handleChange("aplicativo", value)} disabled={isSaving || isPending}>
+            <Select value={formData.NombreAplicativo} onValueChange={(value) => handleChange("NombreAplicativo", value)} disabled={isSaving || isPending}>
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar aplicativo" />
               </SelectTrigger>
@@ -159,87 +163,102 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={formData.email} onChange={(e) => handleChange("email", e.target.value)} disabled={isSaving || isPending} />
+            <Input id="email" type="email" value={formData.Email} onChange={(e) => handleChange("Email", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="celular">Celular</Label>
-            <Input id="celular" value={formData.celular} onChange={(e) => handleChange("celular", e.target.value)} disabled={isSaving || isPending} />
+            <Input id="celular" value={formData.Celular} onChange={(e) => handleChange("Celular", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="direccion">Dirección</Label>
-            <Input id="direccion" value={formData.direccion} onChange={(e) => handleChange("direccion", e.target.value)} disabled={isSaving || isPending} />
+            <Input id="direccion" value={formData.Direccion} onChange={(e) => handleChange("Direccion", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="departamento">Departamento</Label>
-            <Input id="departamento" value={formData.departamento} onChange={(e) => handleChange("departamento", e.target.value)} disabled={isSaving || isPending} />
+            <Input id="departamento" value={formData.NombreDepartamento} onChange={(e) => handleChange("NombreDepartamento", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="municipio">Municipio</Label>
-            <Input id="municipio" value={formData.municipio} onChange={(e) => handleChange("municipio", e.target.value)} disabled={isSaving || isPending} />
+            <Input id="municipio" value={formData.NombreMunicipio} onChange={(e) => handleChange("NombreMunicipio", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="website">Página WEB</Label>
-            <Input id="website" value={formData.website} onChange={(e) => handleChange("website", e.target.value)} disabled={isSaving || isPending} />
+            <Input id="website" value={formData.PaginaWeb} onChange={(e) => handleChange("PaginaWeb", e.target.value)} disabled={isSaving || isPending} />
+          </div>
+          <div className="hidden md:block"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="flex flex-col items-center space-y-2">
+              {formData.Imagenes?.find(img => img.TipoImg === "Logo") && (
+                <img
+                  src={`data:image/${formData.Imagenes.find(img => img.TipoImg === "Logo")?.Extension};base64,${formData.Imagenes.find(img => img.TipoImg === "Logo")?.ImagenBase64}`}
+                  alt="Logo"
+                  className="h-24 w-auto rounded shadow"
+                />
+              )}
+              <input
+                id="logo-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) setLogoFile(file);
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="bg-green-500 hover:bg-green-600 text-white border-none"
+                onClick={() => document.getElementById('logo-upload')?.click()}
+                disabled={isSaving || isPending}
+              >
+                <Link2 className="mr-2 h-4 w-4" />
+                Subir Logo
+              </Button>
+              {logoFile && <p className="text-xs text-gray-600 mt-1">{logoFile.name}</p>}
+            </div>
+
+            {/* Subir Escudo */}
+            <div className="flex flex-col items-center space-y-2">
+              {formData.Imagenes?.find(img => img.TipoImg === "Escudo") && (
+                <img
+                  src={`data:image/${formData.Imagenes.find(img => img.TipoImg === "Escudo")?.Extension};base64,${formData.Imagenes.find(img => img.TipoImg === "Escudo")?.ImagenBase64}`}
+                  alt="Logo"
+                  className="h-24 w-auto rounded shadow"
+                />
+              )}
+              <input
+                id="escudo-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) setEscudoFile(file);
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="bg-green-500 hover:bg-green-600 text-white border-none"
+                onClick={() => document.getElementById('escudo-upload')?.click()}
+                disabled={isSaving || isPending}
+              >
+                <Link2 className="mr-2 h-4 w-4" />
+                Subir Escudo
+              </Button>
+              {escudoFile && <p className="text-xs text-gray-600 mt-1">{escudoFile.name}</p>}
+            </div>
           </div>
         </div>
 
         {/* Subir Archivos */}
-        <div className="flex space-x-4 mt-6">
-          {/* Subir Logo */}
-          <div>
-            <input
-              id="logo-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) setLogoFile(file);
-              }}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="bg-green-500 hover:bg-green-600 text-white border-none"
-              onClick={() => document.getElementById('logo-upload')?.click()}
-              disabled={isSaving || isPending}
-            >
-              <Link2 className="mr-2 h-4 w-4" />
-              Subir Logo
-            </Button>
-            {logoFile && <p className="text-xs text-gray-600 mt-1">{logoFile.name}</p>}
-          </div>
 
-          {/* Subir Escudo */}
-          <div>
-            <input
-              id="escudo-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) setEscudoFile(file);
-              }}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="bg-green-500 hover:bg-green-600 text-white border-none"
-              onClick={() => document.getElementById('escudo-upload')?.click()}
-              disabled={isSaving || isPending}
-            >
-              <Link2 className="mr-2 h-4 w-4" />
-              Subir Escudo
-            </Button>
-            {escudoFile && <p className="text-xs text-gray-600 mt-1">{escudoFile.name}</p>}
-          </div>
-        </div>
 
         {/* Botones Finales */}
         <div className="flex justify-end space-x-4 mt-6">
