@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { Link2 } from "lucide-react"
@@ -9,9 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Entity } from "@/types"
 
 interface EntityData {
-  id?: number
   name?: string
   nit?: string
   aplicativo?: string
@@ -25,46 +23,45 @@ interface EntityData {
 
 interface EntityFormProps {
   isEditing?: boolean
-  entityData?: EntityData
+  entityData?: Entity
 }
 
-export function EntityForm({ isEditing = false, entityData = {} }: EntityFormProps) {
+export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isSaving, setIsSaving] = useState(false)
+
   const [formData, setFormData] = useState<EntityData>({
-    name: entityData.name || "",
-    nit: entityData.nit || "",
-    aplicativo: entityData.aplicativo || "",
-    email: entityData.email || "",
-    celular: entityData.celular || "",
-    direccion: entityData.direccion || "",
-    departamento: entityData.departamento || "",
-    municipio: entityData.municipio || "",
-    website: entityData.website || "",
+    name: "",
+    nit: "",
+    aplicativo: "",
+    email: "",
+    celular: "",
+    direccion: "",
+    departamento: "",
+    municipio: "",
+    website: "",
   })
 
-  // Simular carga de datos cuando se está editando
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [escudoFile, setEscudoFile] = useState<File | null>(null)
+
   const [isLoading, setIsLoading] = useState(isEditing)
 
   useEffect(() => {
-    if (isEditing) {
-      // Simular carga de datos de la API
-      const timer = setTimeout(() => {
-        setFormData({
-          name: entityData.name || "Alcaldía de Baranca",
-          nit: entityData.nit || "900.000.000",
-          aplicativo: entityData.aplicativo || "Gestión PQR+",
-          email: entityData.email || "Baranca@prueba.com",
-          celular: entityData.celular || "3003334455",
-          direccion: entityData.direccion || "Cra 19 #16-47",
-          departamento: entityData.departamento || "Atlantico",
-          municipio: entityData.municipio || "Baranca",
-          website: entityData.website || "www.baranca.com.co",
-        })
-        setIsLoading(false)
-      }, 800)
-      return () => clearTimeout(timer)
+    if (isEditing && entityData) {
+      setFormData({
+        name: entityData.Nombre || "",
+        nit: entityData.NIT || "",
+        aplicativo: entityData.NombreAplicativo || "",
+        email: entityData.Email || "",
+        celular: entityData.Celular || "",
+        direccion: entityData.Direccion || "",
+        departamento: entityData.NombreDepartamento || "",
+        municipio: entityData.NombreMunicipio || "",
+        website: entityData.PaginaWeb || "",
+      })
+      setIsLoading(false)
     }
   }, [isEditing, entityData])
 
@@ -77,11 +74,27 @@ export function EntityForm({ isEditing = false, entityData = {} }: EntityFormPro
     setIsSaving(true)
 
     try {
-      // Simular guardado en la API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      console.log("Guardando entidad:", formData)
+      const formDataToSend = new FormData()
+      formDataToSend.append('name', formData.name || "")
+      formDataToSend.append('nit', formData.nit || "")
+      formDataToSend.append('aplicativo', formData.aplicativo || "")
+      formDataToSend.append('email', formData.email || "")
+      formDataToSend.append('celular', formData.celular || "")
+      formDataToSend.append('direccion', formData.direccion || "")
+      formDataToSend.append('departamento', formData.departamento || "")
+      formDataToSend.append('municipio', formData.municipio || "")
+      formDataToSend.append('website', formData.website || "")
 
-      // Navegar a la página de entidades después de guardar
+      if (logoFile) {
+        formDataToSend.append('logo', logoFile)
+      }
+      if (escudoFile) {
+        formDataToSend.append('escudo', escudoFile)
+      }
+
+      // Aquí enviarías formDataToSend a tu API con fetch o axios
+      console.log("Formulario listo para enviar:", formDataToSend)
+
       startTransition(() => {
         router.push("/dashboard/entidades")
       })
@@ -119,33 +132,20 @@ export function EntityForm({ isEditing = false, entityData = {} }: EntityFormPro
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Inputs */}
           <div className="space-y-2">
             <Label htmlFor="name">Nombre Entidad</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              disabled={isSaving || isPending}
-            />
+            <Input id="name" value={formData.name} onChange={(e) => handleChange("name", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="nit">NIT Entidad</Label>
-            <Input
-              id="nit"
-              value={formData.nit}
-              onChange={(e) => handleChange("nit", e.target.value)}
-              disabled={isSaving || isPending}
-            />
+            <Input id="nit" value={formData.nit} onChange={(e) => handleChange("nit", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="aplicativo">Aplicativo</Label>
-            <Select
-              value={formData.aplicativo}
-              onValueChange={(value) => handleChange("aplicativo", value)}
-              disabled={isSaving || isPending}
-            >
+            <Select value={formData.aplicativo} onValueChange={(value) => handleChange("aplicativo", value)} disabled={isSaving || isPending}>
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar aplicativo" />
               </SelectTrigger>
@@ -159,128 +159,114 @@ export function EntityForm({ isEditing = false, entityData = {} }: EntityFormPro
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-              disabled={isSaving || isPending}
-            />
+            <Input id="email" type="email" value={formData.email} onChange={(e) => handleChange("email", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="celular">
-              Celular <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="celular"
-              value={formData.celular}
-              onChange={(e) => handleChange("celular", e.target.value)}
-              disabled={isSaving || isPending}
-            />
+            <Label htmlFor="celular">Celular</Label>
+            <Input id="celular" value={formData.celular} onChange={(e) => handleChange("celular", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="direccion">Dirección</Label>
-            <Input
-              id="direccion"
-              value={formData.direccion}
-              onChange={(e) => handleChange("direccion", e.target.value)}
-              disabled={isSaving || isPending}
-            />
+            <Input id="direccion" value={formData.direccion} onChange={(e) => handleChange("direccion", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="departamento">Departamento</Label>
-            <Select
-              value={formData.departamento}
-              onValueChange={(value) => handleChange("departamento", value)}
-              disabled={isSaving || isPending}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar departamento" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Atlantico">Atlantico</SelectItem>
-                <SelectItem value="Bolivar">Bolivar</SelectItem>
-                <SelectItem value="Magdalena">Magdalena</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input id="departamento" value={formData.departamento} onChange={(e) => handleChange("departamento", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="municipio">Municipio</Label>
-            <Select
-              value={formData.municipio}
-              onValueChange={(value) => handleChange("municipio", value)}
-              disabled={isSaving || isPending}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar municipio" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Baranca">Baranca</SelectItem>
-                <SelectItem value="Soledad">Soledad</SelectItem>
-                <SelectItem value="Malambo">Malambo</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input id="municipio" value={formData.municipio} onChange={(e) => handleChange("municipio", e.target.value)} disabled={isSaving || isPending} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="website">Página WEB</Label>
-            <Input
-              id="website"
-              value={formData.website}
-              onChange={(e) => handleChange("website", e.target.value)}
-              disabled={isSaving || isPending}
-            />
+            <Input id="website" value={formData.website} onChange={(e) => handleChange("website", e.target.value)} disabled={isSaving || isPending} />
           </div>
         </div>
 
+        {/* Subir Archivos */}
         <div className="flex space-x-4 mt-6">
-          <Button
-            type="button"
-            variant="outline"
-            className="bg-green-500 hover:bg-green-600 text-white border-none"
-            disabled={isSaving || isPending}
-          >
-            <Link2 className="mr-2 h-4 w-4" />
-            Subir Logo
-          </Button>
+          {/* Subir Logo */}
+          <div>
+            <input
+              id="logo-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setLogoFile(file);
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="bg-green-500 hover:bg-green-600 text-white border-none"
+              onClick={() => document.getElementById('logo-upload')?.click()}
+              disabled={isSaving || isPending}
+            >
+              <Link2 className="mr-2 h-4 w-4" />
+              Subir Logo
+            </Button>
+            {logoFile && <p className="text-xs text-gray-600 mt-1">{logoFile.name}</p>}
+          </div>
 
+          {/* Subir Escudo */}
+          <div>
+            <input
+              id="escudo-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setEscudoFile(file);
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="bg-green-500 hover:bg-green-600 text-white border-none"
+              onClick={() => document.getElementById('escudo-upload')?.click()}
+              disabled={isSaving || isPending}
+            >
+              <Link2 className="mr-2 h-4 w-4" />
+              Subir Escudo
+            </Button>
+            {escudoFile && <p className="text-xs text-gray-600 mt-1">{escudoFile.name}</p>}
+          </div>
+        </div>
+
+        {/* Botones Finales */}
+        <div className="flex justify-end space-x-4 mt-6">
           <Button
             type="button"
             variant="outline"
-            className="bg-green-500 hover:bg-green-600 text-white border-none"
+            className="bg-gray-400 hover:bg-gray-500 text-white border-none"
+            onClick={handleCancel}
             disabled={isSaving || isPending}
           >
-            <Link2 className="mr-2 h-4 w-4" />
-            Subir Escudo
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            className="bg-green-500 hover:bg-green-600 text-white"
+            disabled={isSaving || isPending}
+          >
+            {isSaving ? (
+              <div className="flex items-center">
+                <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                Guardando...
+              </div>
+            ) : (
+              "Guardar"
+            )}
           </Button>
         </div>
-      </div>
-
-      <div className="flex justify-end space-x-4">
-        <Button
-          type="button"
-          variant="outline"
-          className="bg-gray-400 hover:bg-gray-500 text-white border-none"
-          onClick={handleCancel}
-          disabled={isSaving || isPending}
-        >
-          Cancelar
-        </Button>
-
-        <Button type="submit" className="bg-green-500 hover:bg-green-600 text-white" disabled={isSaving || isPending}>
-          {isSaving ? (
-            <div className="flex items-center">
-              <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-              Guardando...
-            </div>
-          ) : (
-            "Guardar"
-          )}
-        </Button>
       </div>
     </form>
   )

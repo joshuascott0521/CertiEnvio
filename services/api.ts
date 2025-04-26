@@ -148,7 +148,7 @@ export const userService = {
 export const entityService = {
   getAll: async (): Promise<ApiResponse<Entity[]>> => {
     try {
-      const response = await api.get("/Entidad/GetAll");
+      const response = await api.get("/Entidad/Get");
       return { success: true, data: response.data };
     } catch (error: any) {
       return {

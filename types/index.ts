@@ -12,15 +12,20 @@ export interface User {
 
 
 export interface Entity {
-  id: number;
-  name: string;
-  nit: string;
-  type: string;
-  address: string;
-  city?: string;
-  email: string;
-  phone: string;
-  website?: string;
+  Id: number;
+  Nombre: string;
+  NIT: string;
+  AplicativoId: number;
+  NombreAplicativo: string;
+  Direccion: string;
+  Email: string;
+  Celular: string;
+  PaginaWeb?: string;
+  DepartamentoCod: number;
+  NombreDepartamento: string;
+  MunicipioCod: number;
+  NombreMunicipio: string;
+  Estado: number;
 }
 
 export interface Message {

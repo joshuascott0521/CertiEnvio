@@ -3,55 +3,34 @@
 import { useEffect, useState } from "react"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { EntityForm } from "@/components/entity-form"
+import { entityService } from "@/services/api"
+import { Entity } from "@/types"
+import { useParams } from "next/navigation"
 
-interface EntityData {
-  id: number
-  name: string
-  nit: string
-  aplicativo: string
-  email: string
-  celular: string
-  direccion: string
-  departamento: string
-  municipio: string
-  website: string
-}
 
-// Datos de ejemplo para simular la carga de una entidad
-const entityData: EntityData = {
-  id: 1,
-  name: "Alcaldía de Baranca",
-  nit: "900.000.000",
-  aplicativo: "Gestión PQR+",
-  email: "Baranca@prueba.com",
-  celular: "3003334455",
-  direccion: "Cra 19 #16-47",
-  departamento: "Atlantico",
-  municipio: "Baranca",
-  website: "www.baranca.com.co",
-}
+export default function EditarEntidadPage() {
+  const params = useParams();
+  const id = Number(params?.id);
 
-interface EditarEntidadPageProps {
-  params: {
-    id: string
-  }
-}
-
-export default function EditarEntidadPage({ params }: EditarEntidadPageProps) {
   const [loading, setLoading] = useState(true)
-  const [entity, setEntity] = useState<EntityData | null>(null)
+  const [data, setData] = useState<Entity | null>(null)
 
   useEffect(() => {
-    // Aquí se cargarían los datos de la entidad desde una API
-    // Simulamos una carga con setTimeout
+    setLoading(true);
     const loadEntity = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      setEntity(entityData)
-      setLoading(false)
+      try{
+        const {success, data, error} = await entityService.getById(id);
+        if(!success) throw new Error(error);
+        setData(data);
+      }catch(error){
+        console.error("Error al obtener datos de la entidad", error);
+      }finally{
+        setLoading(false)
+      }
     }
 
-    loadEntity()
-  }, [params.id])
+    if(id) loadEntity();
+  }, [id])
 
   if (loading) {
     return <div className="p-6">Cargando...</div>
@@ -61,7 +40,7 @@ export default function EditarEntidadPage({ params }: EditarEntidadPageProps) {
     <div>
       <DashboardHeader title="Bienvenido a Envia+" breadcrumb="Envia+ / Entidades / Editar" />
       <div className="p-6">
-        <EntityForm isEditing entityData={entity || undefined} />
+        <EntityForm isEditing entityData={data || undefined} />
       </div>
     </div>
   )
