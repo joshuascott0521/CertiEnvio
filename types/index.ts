@@ -10,6 +10,10 @@ export interface User {
   Estado: string;
 }
 
+export interface Aplication{
+  Id: number;
+  Nombre: string;
+}
 
 export interface Entity {
   Id: number;

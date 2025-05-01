@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Entity } from "@/types"
+import { Aplication, Entity } from "@/types"
+import { aplicationService } from "@/services/api"
+import { entityService } from "@/services/api"
 
 interface EntityFormProps {
   isEditing?: boolean
@@ -37,10 +39,13 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
     Imagenes: [],
   })
 
-  const [logoFile, setLogoFile] = useState<File | null>(null)
-  const [escudoFile, setEscudoFile] = useState<File | null>(null)
+  const [logoFile, setLogoFile] = useState<File | undefined>(undefined);
+
+  const [escudoFile, setEscudoFile] = useState<File | undefined>(undefined);
 
   const [isLoading, setIsLoading] = useState(isEditing)
+
+  const [aplicativo, setAplicativo] = useState<Aplication[]>([]);
 
   useEffect(() => {
     if (isEditing && entityData) {
@@ -65,6 +70,20 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
     }
   }, [isEditing, entityData]);
 
+
+  useEffect(()=>{
+    const handleAplication = async () =>{
+      try{
+        const {success, data, error} = await aplicationService.getAll();
+        if (!success) throw new Error(error);
+        setAplicativo(data);
+      }catch(error){
+        console.error("Error al obtener datos de la aplicacion", error);
+      };
+    };
+    handleAplication();
+  }, []);
+
   console.log(formData);
 
   const handleChange = (field: keyof Entity, value: string) => {
@@ -72,42 +91,62 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSaving(true)
-
+    e.preventDefault();
+    setIsSaving(true);
+  
     try {
-      const formDataToSend = new FormData()
-      formDataToSend.append('name', formData.Nombre || "")
-      formDataToSend.append('nit', formData.NIT || "")
-      formDataToSend.append('aplicativo', formData.NombreAplicativo || "")
-      formDataToSend.append('email', formData.Email || "")
-      formDataToSend.append('celular', formData.Celular || "")
-      formDataToSend.append('direccion', formData.Direccion || "")
-      formDataToSend.append('departamento', formData.NombreDepartamento || "")
-      formDataToSend.append('municipio', formData.NombreMunicipio || "")
-      formDataToSend.append('website', formData.PaginaWeb || "")
-
-      if (logoFile) {
-        formDataToSend.append('logo', logoFile)
+      const response = isEditing
+        ? await entityService.update(
+            formData.Id,
+            {
+              Id: formData.Id,
+              Nombre: formData.Nombre,
+              NIT: formData.NIT,
+              AplicativoId: formData.AplicativoId,
+              Direccion: formData.Direccion,
+              Email: formData.Email,
+              Celular: formData.Celular,
+              PaginaWeb: formData.PaginaWeb,
+              DepartamentoCod: formData.DepartamentoCod,
+              MunicipioCod: formData.MunicipioCod,
+              Estado: formData.Estado,
+            },
+            logoFile,
+            escudoFile
+          )
+        : await entityService.create(
+            {
+              Nombre: formData.Nombre,
+              NIT: formData.NIT,
+              AplicativoId: formData.AplicativoId,
+              Direccion: formData.Direccion,
+              Email: formData.Email,
+              Celular: formData.Celular,
+              PaginaWeb: formData.PaginaWeb,
+              DepartamentoCod: formData.DepartamentoCod,
+              MunicipioCod: formData.MunicipioCod,
+              Estado: formData.Estado,
+            },
+            logoFile,
+            escudoFile
+          );
+  
+      if (!response.success) {
+        throw new Error(response.error);
       }
-      if (escudoFile) {
-        formDataToSend.append('escudo', escudoFile)
-      }
-
-
-
-      // Aquí enviarías formDataToSend a tu API con fetch o axios
-      console.log("Formulario listo para enviar:", formDataToSend)
-
+  
       startTransition(() => {
-        router.push("/dashboard/entidades")
-      })
+        router.push("/dashboard/entidades");
+      });
     } catch (error) {
-      console.error("Error al guardar:", error)
+      console.error("Error al guardar la entidad:", error);
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
+  
+  
+  
 
   const handleCancel = () => {
     startTransition(() => {
@@ -149,14 +188,30 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="aplicativo">Aplicativo</Label>
-            <Select value={formData.NombreAplicativo} onValueChange={(value) => handleChange("NombreAplicativo", value)} disabled={isSaving || isPending}>
+            <Select 
+              value={formData.AplicativoId?.toString() ?? ""}
+              onValueChange={(value) => {
+                const id = Number(value);
+                const app = aplicativo.find((a) => a.Id === id);
+                if(app){
+                  setFormData((prev) => ({
+                    ...prev,
+                    AplicativoId: app.Id,
+                    NombreAplicativo: app.Nombre
+                  }));
+                }
+              }}
+              disabled = {isSaving || isPending}
+            >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar aplicativo" />
+                <SelectValue placeholder= "Seleccionar Aplicativo"/>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Gestión PQR+">Gestión PQR+</SelectItem>
-                <SelectItem value="PQR+">PQR+</SelectItem>
-                <SelectItem value="Gestión Legal+">Gestión Legal+</SelectItem>
+                {aplicativo.map((app) => (
+                  <SelectItem key={app.Id} value={app.Id.toString()}>
+                    {app.Nombre}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

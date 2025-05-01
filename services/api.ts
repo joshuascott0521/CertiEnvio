@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { ApiResponse, User, Entity, Message } from "@/types";
+import type { ApiResponse, User, Entity, Message, Aplication } from "@/types";
 import Cookies from "js-cookie";
 
 const API_URL = "https://apienviaplusdev.creapptech.com";
@@ -55,7 +55,7 @@ export const authService = {
     } catch (error: any) {
       return {
         success: false,
-        data: { Token: "", Id: "", Nombre: "", TipoUsuId: ""},
+        data: { Token: "", Id: "", Nombre: "", TipoUsuId: "" },
         error: error.response?.data?.message || "Error al iniciar sesión",
       };
     }
@@ -144,6 +144,21 @@ export const userService = {
   },
 };
 
+export const aplicationService = {
+  getAll: async (): Promise<ApiResponse<Aplication[]>> => {
+    try {
+      const response = await api.get("/Aplicativo/Get");
+      return { success: true, data: response.data }
+    } catch (error: any) {
+      return {
+        success: false,
+        data: [],
+        error: error.response?.data?.message || "Error al obtener Aplicativos",
+      };
+    }
+  }
+};
+
 // Servicios de entidades
 export const entityService = {
   getAll: async (): Promise<ApiResponse<Entity[]>> => {
@@ -172,10 +187,33 @@ export const entityService = {
     }
   },
 
-  create: async (entity: Partial<Entity>): Promise<ApiResponse<Entity>> => {
+  create: async (entity: Partial<Entity>, logoFile?: File, escudoFile?: File): Promise<ApiResponse<Entity>> => {
     try {
-      const response = await api.post("/Entidad/Create", entity);
-      return { success: true, data: response.data };
+      const formData = new FormData();
+      for(const [key, value] of Object.entries(entity)){
+        if(value !== undefined && value !== null){
+          formData.append(`Entidad.${key}`, value.toString());
+        }
+      }
+
+      if(logoFile){
+        formData.append("Logo", logoFile);
+      }
+
+      if(escudoFile){
+        formData.append("Escudo", escudoFile);
+      }
+
+      const response = await api.post(`Entidad/Create`, formData, {
+        headers:{
+          "Content-Type": "multipart/form-data"
+        }
+      });
+
+      return{
+        success: true,
+        data: response.data
+      }
     } catch (error: any) {
       return {
         success: false,
@@ -185,13 +223,33 @@ export const entityService = {
     }
   },
 
-  update: async (
-    id: number,
-    entity: Partial<Entity>
-  ): Promise<ApiResponse<Entity>> => {
+  update: async (id: number, entity: Partial<Entity>, logoFile?: File, escudoFile?: File): Promise<ApiResponse<Entity>> => {
     try {
-      const response = await api.put(`/Entidad/Update/${id}`, entity);
-      return { success: true, data: response.data };
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(entity)) {
+        if (value !== undefined && value !== null) {
+          formData.append(`Entidad.${key}`, value.toString());
+        }
+      }
+
+      if (logoFile) {
+        formData.append("Logo", logoFile);
+      }
+
+      if (escudoFile) {
+        formData.append("Escudo", escudoFile);
+      }
+
+      const response = await api.put(`/Entidad/Update`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+
+      return {
+        success: true,
+        data: response.data,
+      };
     } catch (error: any) {
       return {
         success: false,

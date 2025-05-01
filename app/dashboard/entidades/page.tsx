@@ -151,7 +151,7 @@ export default function EntidadesPage() {
                     </div>
                     <div>
                       <div>
-                        <span className="font-medium">Tipo:</span> {entity.NombreAplicativo}
+                        <span className="font-medium">Aplicativo:</span> {entity.NombreAplicativo}
                       </div>
                       <div>
                         <span className="font-medium">Dirección:</span> {entity.Direccion}
