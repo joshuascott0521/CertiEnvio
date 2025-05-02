@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { ApiResponse, User, Entity, Message, Aplication } from "@/types";
+import type { ApiResponse, User, Entity, Message, Aplication, Departamento, Municipio } from "@/types";
 import Cookies from "js-cookie";
 
 const API_URL = "https://apienviaplusdev.creapptech.com";
@@ -13,18 +13,14 @@ const api = axios.create({
 });
 
 // Interceptor para agregar el token a las peticiones
-api.interceptors.request.use(
-  (config) => {
-    const token = Cookies.get("authToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+api.interceptors.request.use((config) => {
+  const token = Cookies.get("authToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
+
 
 // Interceptor para manejar errores de autenticación
 api.interceptors.response.use(
@@ -150,11 +146,38 @@ export const aplicationService = {
       const response = await api.get("/Aplicativo/Get");
       return { success: true, data: response.data }
     } catch (error: any) {
+      console.error("Respuesta del error en getAll Aplicativos:", error.response);
       return {
         success: false,
         data: [],
         error: error.response?.data?.message || "Error al obtener Aplicativos",
       };
+    }
+  }
+};
+
+
+export const regionService = {
+  getDepartamento: async () => {
+    try {
+      const response = await api.get("/Departamento/Get");
+      return { success: true, data: response.data };
+    } catch (error: any) {
+      console.error("Error en getDepartamento:", error.response?.data || error.message);
+      return { success: false, error: "Error al obtener los departamentos" };
+    }
+  },
+
+  getMunicipio: async (id: number): Promise<ApiResponse<Municipio[]>> => {
+    try {
+      const response = await api.get(`/Municipio/Get/${id}`);
+      return { success: true, data: response.data };
+    } catch (error: any) {
+      return {
+        success: false,
+        data: [],
+        error: error.response?.data?.message || "Error al obtener los municipios"
+      }
     }
   }
 };
@@ -190,27 +213,27 @@ export const entityService = {
   create: async (entity: Partial<Entity>, logoFile?: File, escudoFile?: File): Promise<ApiResponse<Entity>> => {
     try {
       const formData = new FormData();
-      for(const [key, value] of Object.entries(entity)){
-        if(value !== undefined && value !== null){
+      for (const [key, value] of Object.entries(entity)) {
+        if (value !== undefined && value !== null) {
           formData.append(`Entidad.${key}`, value.toString());
         }
       }
 
-      if(logoFile){
+      if (logoFile) {
         formData.append("Logo", logoFile);
       }
 
-      if(escudoFile){
+      if (escudoFile) {
         formData.append("Escudo", escudoFile);
       }
 
       const response = await api.post(`Entidad/Create`, formData, {
-        headers:{
+        headers: {
           "Content-Type": "multipart/form-data"
         }
       });
 
-      return{
+      return {
         success: true,
         data: response.data
       }

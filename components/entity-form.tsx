@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Aplication, Entity } from "@/types"
-import { aplicationService } from "@/services/api"
+import { Aplication, Departamento, Entity, Municipio } from "@/types"
+import { aplicationService, regionService } from "@/services/api"
 import { entityService } from "@/services/api"
+import Cookies from "js-cookie";
+
 
 interface EntityFormProps {
   isEditing?: boolean
@@ -46,45 +48,63 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   const [isLoading, setIsLoading] = useState(isEditing)
 
   const [aplicativo, setAplicativo] = useState<Aplication[]>([]);
+  const [departamento, setDepartamento] = useState<Departamento[]>([]);
+  const [municipio, setMunicipio] = useState<Municipio[]>([]);
+
 
   useEffect(() => {
-    if (isEditing && entityData) {
-      setFormData({
-        Id: entityData.Id,
-        Nombre: entityData.Nombre || "",
-        NIT: entityData.NIT || "",
-        AplicativoId: entityData.AplicativoId || 0,
-        NombreAplicativo: entityData.NombreAplicativo || "",
-        Direccion: entityData.Direccion || "",
-        Email: entityData.Email || "",
-        Celular: entityData.Celular || "",
-        PaginaWeb: entityData.PaginaWeb || "",
-        DepartamentoCod: entityData.DepartamentoCod || 0,
-        NombreDepartamento: entityData.NombreDepartamento || "",
-        MunicipioCod: entityData.MunicipioCod || 0,
-        NombreMunicipio: entityData.NombreMunicipio || "",
-        Estado: entityData.Estado || 1,
-        Imagenes: entityData.Imagenes || []
-      });
-      setIsLoading(false);
-    }
-  }, [isEditing, entityData]);
+    const loadInitialData = async () => {
+      try {
+        const aplicationRes = await aplicationService.getAll();
+        if (!aplicationRes.success) throw new Error(aplicationRes.error);
 
+        const departamentoRes = await regionService.getDepartamento();
+        if (!departamentoRes.success) throw new Error(departamentoRes.error);
 
-  useEffect(()=>{
-    const handleAplication = async () =>{
-      try{
-        const {success, data, error} = await aplicationService.getAll();
-        if (!success) throw new Error(error);
-        setAplicativo(data);
-      }catch(error){
-        console.error("Error al obtener datos de la aplicacion", error);
-      };
+        setAplicativo(aplicationRes.data);
+        setDepartamento(departamentoRes.data);
+
+        if (isEditing && entityData) {
+          setFormData({
+            Id: entityData.Id,
+            Nombre: entityData.Nombre || "",
+            NIT: entityData.NIT || "",
+            AplicativoId: entityData.AplicativoId || 0,
+            NombreAplicativo: entityData.NombreAplicativo || "",
+            Direccion: entityData.Direccion || "",
+            Email: entityData.Email || "",
+            Celular: entityData.Celular || "",
+            PaginaWeb: entityData.PaginaWeb || "",
+            DepartamentoCod: entityData.DepartamentoCod || 0,
+            NombreDepartamento: entityData.NombreDepartamento || "",
+            MunicipioCod: entityData.MunicipioCod || 0,
+            NombreMunicipio: entityData.NombreMunicipio || "",
+            Estado: entityData.Estado || 1,
+            Imagenes: entityData.Imagenes || []
+          });
+
+          if (entityData.DepartamentoCod) {
+            const municipioRes = await regionService.getMunicipio(entityData.DepartamentoCod);
+            console.log("Municipios recibidos:", municipioRes);
+            if (municipioRes.success) {
+              setMunicipio(municipioRes.data);
+            } else {
+              console.error("Error al obtener municipios:", municipioRes.error);
+              setMunicipio([]);
+            }
+          }
+        }
+
+      } catch (error) {
+        console.error("Error al cargar datos iniciales:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    handleAplication();
+
+    loadInitialData();
   }, []);
 
-  console.log(formData);
 
   const handleChange = (field: keyof Entity, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -93,48 +113,50 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-  
+
     try {
       const response = isEditing
         ? await entityService.update(
-            formData.Id,
-            {
-              Id: formData.Id,
-              Nombre: formData.Nombre,
-              NIT: formData.NIT,
-              AplicativoId: formData.AplicativoId,
-              Direccion: formData.Direccion,
-              Email: formData.Email,
-              Celular: formData.Celular,
-              PaginaWeb: formData.PaginaWeb,
-              DepartamentoCod: formData.DepartamentoCod,
-              MunicipioCod: formData.MunicipioCod,
-              Estado: formData.Estado,
-            },
-            logoFile,
-            escudoFile
-          )
+          formData.Id,
+          {
+            Id: formData.Id,
+            Nombre: formData.Nombre,
+            NIT: formData.NIT,
+            AplicativoId: formData.AplicativoId,
+            Direccion: formData.Direccion,
+            Email: formData.Email,
+            Celular: formData.Celular,
+            PaginaWeb: formData.PaginaWeb,
+            DepartamentoCod: formData.DepartamentoCod,
+            MunicipioCod: formData.MunicipioCod,
+            Estado: formData.Estado,
+          },
+          logoFile,
+          escudoFile
+        )
         : await entityService.create(
-            {
-              Nombre: formData.Nombre,
-              NIT: formData.NIT,
-              AplicativoId: formData.AplicativoId,
-              Direccion: formData.Direccion,
-              Email: formData.Email,
-              Celular: formData.Celular,
-              PaginaWeb: formData.PaginaWeb,
-              DepartamentoCod: formData.DepartamentoCod,
-              MunicipioCod: formData.MunicipioCod,
-              Estado: formData.Estado,
-            },
-            logoFile,
-            escudoFile
-          );
-  
+          {
+            Nombre: formData.Nombre,
+            NIT: formData.NIT,
+            AplicativoId: formData.AplicativoId,
+            Direccion: formData.Direccion,
+            Email: formData.Email,
+            Celular: formData.Celular,
+            PaginaWeb: formData.PaginaWeb,
+            DepartamentoCod: formData.DepartamentoCod,
+            MunicipioCod: formData.MunicipioCod,
+            Estado: formData.Estado,
+          },
+          logoFile,
+          escudoFile
+        );
+
+      console.log("📦 Respuesta al crear entidad:", response);
       if (!response.success) {
         throw new Error(response.error);
       }
-  
+
+
       startTransition(() => {
         router.push("/dashboard/entidades");
       });
@@ -144,9 +166,9 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
       setIsSaving(false);
     }
   };
-  
-  
-  
+
+
+
 
   const handleCancel = () => {
     startTransition(() => {
@@ -188,12 +210,12 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="aplicativo">Aplicativo</Label>
-            <Select 
+            <Select
               value={formData.AplicativoId?.toString() ?? ""}
               onValueChange={(value) => {
                 const id = Number(value);
                 const app = aplicativo.find((a) => a.Id === id);
-                if(app){
+                if (app) {
                   setFormData((prev) => ({
                     ...prev,
                     AplicativoId: app.Id,
@@ -201,10 +223,10 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
                   }));
                 }
               }}
-              disabled = {isSaving || isPending}
+              disabled={isSaving || isPending}
             >
               <SelectTrigger>
-                <SelectValue placeholder= "Seleccionar Aplicativo"/>
+                <SelectValue placeholder="Seleccionar Aplicativo" />
               </SelectTrigger>
               <SelectContent>
                 {aplicativo.map((app) => (
@@ -233,12 +255,78 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="departamento">Departamento</Label>
-            <Input id="departamento" value={formData.NombreDepartamento} onChange={(e) => handleChange("NombreDepartamento", e.target.value)} disabled={isSaving || isPending} />
+            <Select
+              value={formData.DepartamentoCod?.toString() ?? ""}
+              onValueChange={async (value) => {
+                const id = Number(value);
+                const dep = departamento.find((a) => a.Cod === id);
+                if (dep) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    DepartamentoCod: dep.Cod,
+                    NombreDepartamento: dep.Nombre,
+                    MunicipioCod: 0,
+                    NombreMunicipio: "",
+                  }));
+
+                  // 🔥 Cargar municipios correctamente
+                  const municipioRes = await regionService.getMunicipio(dep.Cod);
+                  if (municipioRes.success) {
+                    setMunicipio(municipioRes.data);
+                  } else {
+                    console.error("Error al obtener municipios:", municipioRes.error);
+                    setMunicipio([]);
+                  }
+                }
+              }}
+
+              disabled={isSaving || isPending}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar Departamento" />
+              </SelectTrigger>
+              <SelectContent>
+                {departamento.map((dep) => (
+                  <SelectItem key={dep.Cod} value={dep.Cod.toString()}>
+                    {dep.Nombre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="municipio">Municipio</Label>
-            <Input id="municipio" value={formData.NombreMunicipio} onChange={(e) => handleChange("NombreMunicipio", e.target.value)} disabled={isSaving || isPending} />
+            <Select
+              value={formData.MunicipioCod ? formData.MunicipioCod.toString() : ""}
+              onValueChange={(value) => {
+                const cod = Number(value);
+                const mun = municipio.find((m) => m.Cod === cod);
+                if (mun) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    MunicipioCod: mun.Cod,
+                    NombreMunicipio: mun.Nombre,
+                  }));
+                }
+              }}
+              disabled={isSaving || isPending || municipio.length === 0}
+            >
+
+
+
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar Municipio" />
+              </SelectTrigger>
+              <SelectContent>
+                {municipio.map((mun) => (
+                  <SelectItem key={mun.Cod} value={mun.Cod.toString()}>
+                    {mun.Nombre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+
+            </Select>
           </div>
 
           <div className="space-y-2">

@@ -15,6 +15,16 @@ export interface Aplication{
   Nombre: string;
 }
 
+export interface Departamento{
+  Cod: number;
+  Nombre: string
+}
+
+export interface Municipio{
+  Cod: number;
+  Nombre: string
+}
+
 export interface Entity {
   Id: number;
   Nombre: string;
@@ -24,7 +34,7 @@ export interface Entity {
   Direccion: string;
   Email: string;
   Celular: string;
-  PaginaWeb?: string;
+  PaginaWeb: string;
   DepartamentoCod: number;
   NombreDepartamento: string;
   MunicipioCod: number;
