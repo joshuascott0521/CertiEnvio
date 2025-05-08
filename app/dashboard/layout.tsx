@@ -4,6 +4,8 @@ import { DashboardNav } from "@/components/dashboard-nav";
 import { X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthGuard } from "@/components/auth-guard";
+import { Toaster } from "@/components/ui/toaster"; // asegúrate de que la ruta esté correcta
+
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -36,11 +38,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <X className="h-5 w-5" />
             </button>
           </div>
+
+          {/* 🔥 Monta el Toaster aquí */}
+          <Toaster />
+
           <main className="flex-1">
             <Suspense fallback={<DashboardSkeleton />}>{children}</Suspense>
           </main>
         </div>
       </div>
     </AuthGuard>
+
   );
 }

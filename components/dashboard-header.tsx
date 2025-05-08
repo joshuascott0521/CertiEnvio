@@ -20,7 +20,7 @@ export function DashboardHeader({ title, breadcrumb }: DashboardHeaderProps) {
   const Usuario = localStorage.getItem("userName");
   const Rol = localStorage.getItem("userType");
   return (
-    <header className="h-16 bg-sky-500 text-white px-6 flex items-center justify-between">
+    <header className="h-[70px] bg-sky-500 text-white px-6 flex items-center justify-between">
       <div>
         <h1 className="text-xl font-medium">{title}</h1>
         {breadcrumb && <p className="text-sm text-sky-100">{breadcrumb}</p>}

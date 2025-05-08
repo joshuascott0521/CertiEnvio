@@ -81,12 +81,12 @@ export function DashboardNav() {
 
   return (
     <nav className="w-64 bg-white border-r min-h-screen">
-      <div className="p-4">
-        <div className="flex items-center justify-center mb-6 pt-2">
+      <div className="px-4 py-2">
+        <div className="flex items-center justify-center">
           <img
             src="/CertiLogo.png"
             alt="Logo CertiEnvíos"
-            className="w-[150px] h-auto object-contain pb-2"
+            className="w-[140px] h-auto object-contain"
           />
           {/* // <Mail className="h-10 w-10 text-sky-500" /> */}
         </div>

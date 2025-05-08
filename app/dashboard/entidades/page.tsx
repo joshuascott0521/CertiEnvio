@@ -8,6 +8,8 @@ import { useState, useEffect, useTransition } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Entity } from "@/types";
 import { entityService } from "@/services/api";
+import { toast, useToast } from "@/hooks/use-toast";
+import { title } from "process";
 
 type Props = {
   Entity: Entity;
@@ -19,6 +21,9 @@ export default function EntidadesPage() {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Entity[]>([]);
+  const [toastOpen, setToastOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState("")
+
 
   useEffect(() => {
     // carga de datos
@@ -36,6 +41,16 @@ export default function EntidadesPage() {
       }
     };
 
+    const msg = sessionStorage.getItem("toastMessage");
+    if (msg) {
+      toast({
+        title: "Éxito",
+        description: "La entidad fue guardada correctamente.",
+        variant: "success",
+      });
+      
+      sessionStorage.removeItem("toastMessage");
+    }
     obtenerEntidades();
   }, []);
 
@@ -54,7 +69,7 @@ export default function EntidadesPage() {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <DashboardHeader title="Entidades" breadcrumb="Envia+ / Entidades" />
-      <div className="p-6 bg-gray-50 shrink-0">
+      <div className="p-6 pb-0 bg-gray-50 shrink-0">
         <Button
           className="mb-4 bg-green-500 hover:bg-green-600 text-white"
           onClick={handleAddEntity}
@@ -130,19 +145,19 @@ export default function EntidadesPage() {
                       <div>
                         {/* Tooltip Para Label Entidad */}
                         <div className="relative group w-fit max-w-[250px]">
-                        <div className="truncate block relative z-10">
-                          <span className="font-medium">Entidad:</span>{" "}
-                          <span>{entity.Nombre}</span>
-                        </div>
-                        <div className="absolute z-20 left-0 right-0 bottom-full mb-2 mx-auto hidden group-hover:flex flex-col items-center
-                                        opacity-0 group-hover:opacity-100 transform scale-95 group-hover:scale-100 transition-all duration-200"
-                        >
-                          <div className="bg-blue-600 text-white text-xs rounded px-3 py-2 whitespace-normal break-words max-w-xs text-center shadow-lg">
-                            {entity.Nombre}
+                          <div className="truncate block relative z-10">
+                            <span className="font-medium">Entidad:</span>{" "}
+                            <span>{entity.Nombre}</span>
                           </div>
-                          <div className="w-2 h-2 rotate-45 bg-blue-600 -mt-1 shadow-lg"></div>
+                          <div className="absolute z-20 left-0 right-0 bottom-full mb-2 mx-auto hidden group-hover:flex flex-col items-center
+                                        opacity-0 group-hover:opacity-100 transform scale-95 group-hover:scale-100 transition-all duration-200"
+                          >
+                            <div className="bg-blue-600 text-white text-xs rounded px-3 py-2 whitespace-normal break-words max-w-xs text-center shadow-lg">
+                              {entity.Nombre}
+                            </div>
+                            <div className="w-2 h-2 rotate-45 bg-blue-600 -mt-1 shadow-lg"></div>
+                          </div>
                         </div>
-                      </div>
                         {/* Nit */}
                         <div>
                           <span className="font-medium">NIT:</span> {entity.NIT}

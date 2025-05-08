@@ -10,7 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Aplication, Departamento, Entity, Municipio } from "@/types"
 import { aplicationService, regionService } from "@/services/api"
 import { entityService } from "@/services/api"
-import Cookies from "js-cookie";
+import { useToast } from "@/hooks/use-toast"
+import { Toaster } from "@/components/ui/toaster"
+
 
 
 interface EntityFormProps {
@@ -50,6 +52,13 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   const [aplicativo, setAplicativo] = useState<Aplication[]>([]);
   const [departamento, setDepartamento] = useState<Departamento[]>([]);
   const [municipio, setMunicipio] = useState<Municipio[]>([]);
+  const [toastOpen, setToastOpen] = useState(false)
+  const [errorToastOpen, setErrorToastOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("") 
+  const { toast } = useToast()
+
+
+
 
 
   useEffect(() => {
@@ -156,12 +165,24 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
         throw new Error(response.error);
       }
 
-
+      toast({
+        variant: "success",
+        title: "Éxito",
+        description: "La entidad fue guardada correctamente",
+      })
+      
       startTransition(() => {
         router.push("/dashboard/entidades");
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al guardar la entidad:", error);
+      setErrorMessage(error.message || "Error desconocido")
+      toast({
+        variant: "error",
+        title: "Error al guardar",
+        description: error.message || "Ocurrió un error inesperado.",
+      })
+      
     } finally {
       setIsSaving(false);
     }
@@ -429,7 +450,10 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
             )}
           </Button>
         </div>
+        {/* Toast de error */}
+       
       </div>
+
     </form>
   )
 }
