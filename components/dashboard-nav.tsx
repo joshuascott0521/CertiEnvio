@@ -52,7 +52,7 @@ const navItems: NavItem[] = [
   {
     id: "usuario",
     href: "/dashboard/usuario",
-    label: "Usuario",
+    label: "Usuarios",
     icon: User,
     pattern: /^\/dashboard\/usuario/,
   },

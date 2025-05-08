@@ -1,208 +1,143 @@
 "use client";
 
 import { DashboardHeader } from "@/components/dashboard-header";
-import { Card, CardContent } from "@/components/ui/card";
-import { FloatingLabel } from "@/components/ui/FloatingLabel";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { Skeleton } from "@/components/ui/skeleton"
-import { FormErrors } from "@/types";
+import { useRouter } from "next/router";
+import { useEffect, useState, useTransition } from "react";
+import { User } from "@/types";
 import { userService } from "@/services/api";
+import { Button } from "@/components/ui/button";
+import { PlusCircle, CircleUserRound, Edit } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
 
 export default function UsuarioPage() {
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [nombre, setNombre] = useState("");
-  const [identificacion, setIdentificacion] = useState("");
-  const [celular, setCelular] = useState("");
-  const [email, setEmail] = useState("");
-  const [rol, setRol] = useState("");
-  const [tipoUsuId, setTipoUsuId] = useState("");
-  const [tipoUsuName, setTipoUsuName] = useState("")
-  const [estado, setEstado] = useState("");
-  const [actualPassword, setActualPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirNewPassword, setConfirNewPassword] = useState("");
-
-
+  //const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<User[]>([]);
 
   useEffect(() => {
     setLoading(true);
-    const obtenerUsuario = async () => {
+    const obtenerUsuarios = async () => {
       try {
-        const token = localStorage.getItem("authToken");
-        const userId = localStorage.getItem("userId");
-
-        if (!token || !userId) return;
-
-        const { success, data, error } = await userService.getById(userId!);
+        const { success, data, error } = await userService.getProfile();
         if (!success) throw new Error(error);
-
-        setNombre(data.Nombre || "");
-        setIdentificacion(data.Documento || "");
-        setCelular(data.Celular || "");
-        setEmail(data.Email || "");
-        setRol(data.Role || "");
-        setTipoUsuId(data.TipoUsuId || "");
-        setTipoUsuName(data.TipoUsuarioNombre || "");
-        setEstado(data.Estado || "");
-
+        setData(data);
       } catch (error) {
-        console.error("Error al obtener datos del usuario:", error);
+        console.error("Error al obtener los usuarios")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-
-    obtenerUsuario();
+    }
+    obtenerUsuarios();
   }, []);
 
-  const actualizarDatos = async () => {
-    try {
-      setIsUpdating(true);
-      const userId = localStorage.getItem("userId");
-
-      if (!userId) return;
-
-      const payload = {
-        Id: userId,
-        Documento: identificacion,
-        Nombre: nombre,
-        TipoUsuId: tipoUsuId,
-        Email: email,
-        Celular: celular,
-        Estado: estado,
-      };
-
-      const {success, error} = await userService.updateProfile(payload);
-      if(!success) throw new Error(error);
-    } catch (error) {
-      console.error("Error al actualizar datos:", error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const cambioPassword = async () => {
-    try {
-      setIsUpdating(true);
-      const userId = localStorage.getItem("userId");
-
-      if (!userId) return;
-
-      const payload = {
-        Id: userId,
-        PasswordAntigua: actualPassword,
-        PasswordNueva: newPassword,
-        PasswordConfirmacion: confirNewPassword,
-      };
-
-      const {success, error} = await userService.changePassword(payload);
-      if(!success) throw new Error(error);
-
-      setActualPassword("");
-      setNewPassword("");
-      setConfirNewPassword("");
-    } catch (error) {
-      console.error("Error al cambiar la contraseña:", error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <DashboardHeader title="Usuario" breadcrumb="Envia+ / Usuario" />
-        <main className="flex-grow bg-gray-50">
-          <div className="p-4 max-w-screen-xl w-full mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Mi Cuenta</h2>
-
-            <Card className="rounded-xl p-4 bg-white shadow mt-4">
-              <CardContent className="py-2 px-4">
-                <Skeleton className="h-6 w-1/4 mb-4" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[...Array(4)].map((_, i) => (
-                    <Skeleton key={i} className="h-9 w-full rounded-md" />
-                  ))}
-                </div>
-                <div className="flex justify-end mt-4">
-                  <Skeleton className="h-9 w-32 rounded-md" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="rounded-xl p-4 bg-white shadow mt-4">
-              <CardContent className="py-2 px-4">
-                <Skeleton className="h-6 w-1/4 mb-4" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[...Array(3)].map((_, i) => (
-                    <Skeleton key={i} className="h-9 w-full rounded-md" />
-                  ))}
-                </div>
-                <div className="flex justify-end mt-4">
-                  <Skeleton className="h-9 w-32 rounded-md" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col min-h-screen">
-      <DashboardHeader title="Usuario" breadcrumb="Envia+ / Usuario" />
-      <main className="flex-grow bg-gray-50">
-        <div className="p-4 max-w-screen-xl w-full mx-auto">
-          <h2 className="text-2xl font-bold">Mi Cuenta</h2>
-          <Card className="rounded-xl p-2 bg-white shadow mt-4">
-            <CardContent className="py-2 px-8">
-              <h3 className="text-lg font-bold pb-2 border-b-2 border-gray-300">
-                Datos del usuario
-              </h3>
-              <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
-                <FloatingLabel id="nombre" className="w-full max-w-lg" label="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-                <FloatingLabel id="identificacion" className="w-full max-w-lg" label="No. Identificación" value={identificacion} onChange={(e) => setIdentificacion(e.target.value)} />
-                <FloatingLabel id="celular" className="w-full max-w-lg" label="Celular" value={celular} onChange={(e) => setCelular(e.target.value)} />
-                <FloatingLabel id="email" className="w-full max-w-lg" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <div className="col-span-full flex justify-center md:justify-end">
-                  <button
-                    className={`w-full md:w-auto bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 ${isUpdating ? "opacity-50 cursor-not-allowed" : ""}`}
-                    disabled={isUpdating}
-                    onClick={actualizarDatos}
-                  >
-                    {isUpdating ? "Guardando..." : "Guardar"}
-                  </button>
+    <div className="h-screen flex flex-col overflow-hidden">
+      <DashboardHeader title="Entidades" breadcrumb="CertiEnvíos / Usuarios" />
+      <div className="p-6 pb-0 bg-gray-50 shrink-0">
+        <Button
+          className="mb-4 bg-green-500 hover:bg-green-600 text-white"
+          disabled={isPending}
+        >
+          {isPending ? (
+            <div className="flex items-center">
+              <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+              Cargando...
+            </div>
+          ) : (
+            <>
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Agregar
+            </>
+          )}
+        </Button>
+      </div>
+      <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+        <div className="space-y-4">
+          {loading
+            ? Array.from({ length: 2 }).map((_, i) => (
+              <div
+                key={i}
+                className="border rounded-lg p-6 max-w-6xl mx-auto bg-white shadow-sm flex flex-col md:flex-row justify-between items-center gap-4"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-10 w-10 rounded-md" />
+                    <div>
+                      <Skeleton className="h-4 w-40 mb-2" />
+                      <Skeleton className="h-4 w-28" />
+                    </div>
+                  </div>
+                  <div>
+                    <Skeleton className="h-4 w-40 mb-2" />
+                    <Skeleton className="h-4 w-32 mb-2" />
+                    <Skeleton className="h-4 w-48" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-4 w-52 mb-2" />
+                    <Skeleton className="h-4 w-40 mb-2" />
+                    <Skeleton className="h-4 w-44" />
+                  </div>
+                </div>
+                <div className="md:align-center">
+                  <Skeleton className="h-10 w-10 rounded-full" />
                 </div>
               </div>
-            </CardContent>
-          </Card>
-          <Card className="rounded-xl p-2 bg-white shadow mt-4">
-            <CardContent className="py-2 px-8">
-              <h3 className="text-lg font-bold pb-2 border-b-2 border-gray-300">
-                Cambiar Contraseña
-              </h3>
-              <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
-                <FloatingLabel id="actual" className="w-full max-w-lg" label="Contraseña Actual" type="password" value={actualPassword} onChange={(e) => setActualPassword(e.target.value)} />
-                <div className="hidden md:block" />
-                <FloatingLabel id="new" className="w-full max-w-lg" label="Contraseña Nueva" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                <FloatingLabel id="confirm" className="w-full max-w-lg" label="Confirmar Contraseña" type="password" value={confirNewPassword} onChange={(e) => setConfirNewPassword(e.target.value)} />
-                <div className="col-span-full flex justify-center md:justify-end">
-                  <button
-                    className={`w-full md:w-auto bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 ${isUpdating ? "opacity-50 cursor-not-allowed" : ""}`}
-                    disabled={isUpdating}
-                    onClick={cambioPassword}
+            ))
+            : data.map((user) => (
+              <div
+                key={user.Id}
+                className="border rounded-lg p-6 max-w-6xl mx-auto bg-white shadow-sm flex flex-col md:flex-row justify-between items-center gap-4"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+                  <div className="flex items-center gap-2">
+                    <CircleUserRound className="h-10 w-10 text-gray-500 mt-1" />
+                    <div>
+                      <div>
+                        <span className="font-medium">Nombre:</span> {user.Nombre}
+                      </div>
+                      <div>
+                        <span className="font-medium">Documento:</span> {user.Documento}
+                      </div>
+                      <div>
+                        <span className="font-medium">Estado:</span> {user.Estado}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div>
+                      <span className="font-medium">Tipo:</span> {user.TipoUsuarioNombre}
+                    </div>
+                    <div>
+                      <span className="font-medium">Rol:</span> {user.Role}
+                    </div>
+                  </div>
+                  <div>
+                    <div>
+                      <span className="font-medium">Correo:</span> {user.Email}
+                    </div>
+                    <div>
+                      <span className="font-medium">Celular:</span> {user.Celular}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botón de editar */}
+                <div className="md:align-center">
+                  <Button
+                    variant="ghost"
+                    className="rounded-full bg-yellow-200 hover:bg-yellow-300 p-3"
+                    onClick={() => console.log("Editar usuario", user.Id)}
+                    disabled={isPending}
                   >
-                    {isUpdating ? "Guardando..." : "Guardar"}
-                  </button>
+                    <Edit className="h-5 w-5 text-yellow-600" />
+                  </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            ))}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

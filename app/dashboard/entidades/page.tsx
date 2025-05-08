@@ -8,8 +8,7 @@ import { useState, useEffect, useTransition } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Entity } from "@/types";
 import { entityService } from "@/services/api";
-import { toast, useToast } from "@/hooks/use-toast";
-import { title } from "process";
+import { toast } from "@/hooks/use-toast";
 
 type Props = {
   Entity: Entity;
@@ -21,8 +20,7 @@ export default function EntidadesPage() {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Entity[]>([]);
-  const [toastOpen, setToastOpen] = useState(false)
-  const [toastMessage, setToastMessage] = useState("")
+
 
 
   useEffect(() => {
@@ -31,7 +29,6 @@ export default function EntidadesPage() {
     const obtenerEntidades = async () => {
       try {
         const { success, data, error } = await entityService.getAll();
-        console.log(success, data, error);
         if (!success) throw new Error(error);
         setData(data);
       } catch (error) {
@@ -68,7 +65,7 @@ export default function EntidadesPage() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      <DashboardHeader title="Entidades" breadcrumb="Envia+ / Entidades" />
+      <DashboardHeader title="Entidades" breadcrumb="CertiEnvíos / Entidades" />
       <div className="p-6 pb-0 bg-gray-50 shrink-0">
         <Button
           className="mb-4 bg-green-500 hover:bg-green-600 text-white"
