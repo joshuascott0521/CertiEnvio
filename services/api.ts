@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { ApiResponse, User, Entity, Message, Aplication, Departamento, Municipio } from "@/types";
+import type { ApiResponse, User, Entity, Message, Aplication, Departamento, Municipio, UserType } from "@/types";
 import Cookies from "js-cookie";
 
 const API_URL = "https://apienviaplusdev.creapptech.com";
@@ -138,6 +138,22 @@ export const userService = {
       };
     }
   },
+};
+
+export const userTypeService = {
+  getAll: async (): Promise<ApiResponse<UserType[]>> => {
+    try{
+      const response = await api.get("/tipousuario/ObtenerAllTipoUsuario");
+      return {success: true, data: response.data}
+    }catch(error:any){
+      console.error("Error al traer tipos de usuarios", error.response)
+      return{
+        success: false,
+        data: [],
+        error: error.response?.data?.message || "Error al obtener tipos de usuarios",
+      }
+    }
+  }
 };
 
 export const aplicationService = {

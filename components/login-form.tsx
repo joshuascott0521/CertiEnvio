@@ -1,11 +1,9 @@
 "use client";
 
 import type React from "react";
-import Cookies from "js-cookie";
 
 import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 
@@ -16,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormErrors } from "../types";
-import { authService } from "../services/api";
 import { useAuth } from "@/contexts/auth-context";
 
 type Props = {

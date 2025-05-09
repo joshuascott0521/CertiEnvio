@@ -1,7 +1,7 @@
 "use client";
 
 import { DashboardHeader } from "@/components/dashboard-header";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { User } from "@/types";
 import { userService } from "@/services/api";
@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 
 export default function UsuarioPage() {
-  //const router = useRouter();
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<User[]>([]);
@@ -31,6 +31,12 @@ export default function UsuarioPage() {
     }
     obtenerUsuarios();
   }, []);
+
+  const handleEditUser = (id: string) => {
+    startTransition(() => {
+      router.push(`/usuarios/editar/${id}`);
+    });
+  };
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
@@ -128,7 +134,7 @@ export default function UsuarioPage() {
                   <Button
                     variant="ghost"
                     className="rounded-full bg-yellow-200 hover:bg-yellow-300 p-3"
-                    onClick={() => console.log("Editar usuario", user.Id)}
+                    onClick={() => handleEditUser(user.Id)}
                     disabled={isPending}
                   >
                     <Edit className="h-5 w-5 text-yellow-600" />

@@ -38,7 +38,7 @@ export default function EditarEntidadPage() {
 
   return (
     <div>
-      <DashboardHeader title="Bienvenido a Envia+" breadcrumb="Envia+ / Entidades / Editar" />
+      <DashboardHeader title="Bienvenido a CertiEnvíos" breadcrumb="CertiEnvíos / Entidades / Editar" />
       <div className="p-6">
         <EntityForm isEditing entityData={data || undefined} />
       </div>

@@ -10,6 +10,13 @@ export interface User {
   Estado: string;
 }
 
+export interface UserType {
+  Id: string;
+  Nombre: string;
+  Role: string;
+  Estado: number;
+}
+
 export interface Aplication{
   Id: number;
   Nombre: string;

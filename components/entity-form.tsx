@@ -24,7 +24,6 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isSaving, setIsSaving] = useState(false)
-
   const [formData, setFormData] = useState<Entity>({
     Id: 0,
     Nombre: "",
@@ -44,17 +43,12 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   })
 
   const [logoFile, setLogoFile] = useState<File | undefined>(undefined);
-
   const [escudoFile, setEscudoFile] = useState<File | undefined>(undefined);
-
   const [isLoading, setIsLoading] = useState(isEditing)
-
   const [aplicativo, setAplicativo] = useState<Aplication[]>([]);
   const [departamento, setDepartamento] = useState<Departamento[]>([]);
   const [municipio, setMunicipio] = useState<Municipio[]>([]);
-  const [toastOpen, setToastOpen] = useState(false)
-  const [errorToastOpen, setErrorToastOpen] = useState(false)
-  const [errorMessage, setErrorMessage] = useState("") 
+  const [errorMessage, setErrorMessage] = useState("")
   const { toast } = useToast()
 
 
@@ -170,7 +164,7 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
         title: "Éxito",
         description: "La entidad fue guardada correctamente",
       })
-      
+
       startTransition(() => {
         router.push("/dashboard/entidades");
       });
@@ -182,7 +176,7 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
         title: "Error al guardar",
         description: error.message || "Ocurrió un error inesperado.",
       })
-      
+
     } finally {
       setIsSaving(false);
     }
@@ -451,7 +445,7 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
           </Button>
         </div>
         {/* Toast de error */}
-       
+
       </div>
 
     </form>
