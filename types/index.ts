@@ -36,7 +36,8 @@ export interface Entity {
   Id: number;
   Nombre: string;
   NIT: string;
-  AplicativoId: number;
+  AplicativoId?: number;
+  Password?: string;
   NombreAplicativo: string;
   Direccion: string;
   Email: string;

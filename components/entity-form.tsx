@@ -12,6 +12,8 @@ import { aplicationService, regionService } from "@/services/api"
 import { entityService } from "@/services/api"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
+import { FloatingLabel } from "./ui/FloatingLabel"
+import { FloatingSelect } from "./ui/FloatingSelect"
 
 
 
@@ -29,6 +31,7 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
     Nombre: "",
     NIT: "",
     AplicativoId: 0,
+    Password: "",
     NombreAplicativo: "",
     Direccion: "",
     Email: "",
@@ -73,6 +76,7 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
             Nombre: entityData.Nombre || "",
             NIT: entityData.NIT || "",
             AplicativoId: entityData.AplicativoId || 0,
+            Password: entityData.Password || "",
             NombreAplicativo: entityData.NombreAplicativo || "",
             Direccion: entityData.Direccion || "",
             Email: entityData.Email || "",
@@ -140,6 +144,7 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
         : await entityService.create(
           {
             Nombre: formData.Nombre,
+            Password: formData.Password,
             NIT: formData.NIT,
             AplicativoId: formData.AplicativoId,
             Direccion: formData.Direccion,
@@ -148,7 +153,6 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
             PaginaWeb: formData.PaginaWeb,
             DepartamentoCod: formData.DepartamentoCod,
             MunicipioCod: formData.MunicipioCod,
-            Estado: formData.Estado,
           },
           logoFile,
           escudoFile
@@ -203,7 +207,7 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
       <div>
         <h2 className="text-xl font-bold mb-4">Registro de Entidad</h2>
 
@@ -213,143 +217,104 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Inputs */}
-          <div className="space-y-2">
-            <Label htmlFor="name">Nombre Entidad</Label>
-            <Input id="name" value={formData.Nombre} onChange={(e) => handleChange("Nombre", e.target.value)} disabled={isSaving || isPending} />
-          </div>
+          <FloatingLabel id="new" className="w-full max-w-lg" label="Nombre Entidad" type="text" value={formData.Nombre} onChange={(e) => handleChange("Nombre", e.target.value)} disabled={isSaving || isPending} />
+          <FloatingLabel id="new" className="w-full max-w-lg" label="NIT Entidad" type="text" value={formData.NIT} onChange={(e) => handleChange("NIT", e.target.value)} disabled={isSaving || isPending} />
+          <FloatingSelect
+            label="Aplicativo"
+            value={formData.AplicativoId ? formData.AplicativoId.toString() : ""}
+            placeholder="Seleccionar Aplicativo"
+            onChange={(value) => {
+              const id = Number(value);
+              const app = aplicativo.find((a) => a.Id === id)
+              if (app) {
+                setFormData((prev) => ({
+                  ...prev,
+                  AplicativoId: app.Id,
+                  NombreAplicativo: app.Nombre
+                }));
+              }
+            }}
+            options={aplicativo.map((app) => ({
+              value: app.Id.toString(),
+              label: app.Nombre
+            }))}
+            className="w-full max-w-lg"
+            disabled={isSaving || isPending}
+          />
+          <FloatingLabel id="new" className="w-full max-w-lg" label="Email" type="text" value={formData.Email} onChange={(e) => handleChange("Email", e.target.value)} disabled={isSaving || isPending} />
+          <FloatingLabel id="new" className="w-full max-w-lg" label="Celular" type="text" value={formData.Celular} onChange={(e) => handleChange("Celular", e.target.value)} disabled={isSaving || isPending} />
+          <FloatingLabel id="new" className="w-full max-w-lg" label="Dirección" type="text" value={formData.Direccion} onChange={(e) => handleChange("Direccion", e.target.value)} disabled={isSaving || isPending} />
+          <FloatingSelect
+            label="Departamento"
+            placeholder="Seleccionar Departamento"
+            value={formData.DepartamentoCod ? formData.DepartamentoCod.toString() : ""}
+            disabled={isSaving || isPending}
+            options={departamento.map((dep) => ({
+              value: dep.Cod.toString(),
+              label: dep.Nombre
+            }))}
+            onChange={async (value) => {
+              const id = Number(value);
+              const dep = departamento.find((a) => a.Cod === id);
+              if (dep) {
+                setFormData((prev) => ({
+                  ...prev,
+                  DepartamentoCod: dep.Cod,
+                  NombreDepartamento: dep.Nombre,
+                  MunicipioCod: 0,
+                  NombreMunicipio: ""
+                }));
 
-          <div className="space-y-2">
-            <Label htmlFor="nit">NIT Entidad</Label>
-            <Input id="nit" value={formData.NIT} onChange={(e) => handleChange("NIT", e.target.value)} disabled={isSaving || isPending} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="aplicativo">Aplicativo</Label>
-            <Select
-              value={formData.AplicativoId?.toString() ?? ""}
-              onValueChange={(value) => {
-                const id = Number(value);
-                const app = aplicativo.find((a) => a.Id === id);
-                if (app) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    AplicativoId: app.Id,
-                    NombreAplicativo: app.Nombre
-                  }));
+                const municipioRes = await regionService.getMunicipio(dep.Cod)
+                if (municipioRes.success) {
+                  setMunicipio(municipioRes.data)
+                } else {
+                  console.error("Error al obtener municipios:", municipioRes.error);
+                  setMunicipio([]);
                 }
-              }}
+              }
+            }}
+            className="w-full max-w-lg"
+          />
+          <FloatingSelect
+            label="Municipio"
+            value={formData.MunicipioCod ? formData.MunicipioCod.toString() : ""}
+            placeholder="Seleccionar Municipio"
+            disabled={isSaving || isPending}
+            options={municipio.map((mun) => ({
+              value: mun.Cod.toString(),
+              label: mun.Nombre
+            }))}
+            onChange={(value) => {
+              const cod = Number(value);
+              const mun = municipio.find((m) => m.Cod === cod);
+              if (mun) {
+                setFormData((prev) => ({
+                  ...prev,
+                  MunicipioCod: mun.Cod,
+                  NombreMunicipio: mun.Nombre,
+                }));
+              }
+            }}
+            className="w-full max-w-lg"
+          />
+          <FloatingLabel id="new" className="w-full max-w-lg" label="Página Web" type="text" value={formData.PaginaWeb} onChange={(e) => handleChange("PaginaWeb", e.target.value)} disabled={isSaving || isPending} />
+          {!isEditing && (
+            <FloatingLabel
+              id="new"
+              className="w-full max-w-lg"
+              label="Contraseña"
+              value= {formData.Password}
+              type="password"
+              onChange={(e) => handleChange("Password", e.target.value)}
               disabled={isSaving || isPending}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar Aplicativo" />
-              </SelectTrigger>
-              <SelectContent>
-                {aplicativo.map((app) => (
-                  <SelectItem key={app.Id} value={app.Id.toString()}>
-                    {app.Nombre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={formData.Email} onChange={(e) => handleChange("Email", e.target.value)} disabled={isSaving || isPending} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="celular">Celular</Label>
-            <Input id="celular" value={formData.Celular} onChange={(e) => handleChange("Celular", e.target.value)} disabled={isSaving || isPending} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="direccion">Dirección</Label>
-            <Input id="direccion" value={formData.Direccion} onChange={(e) => handleChange("Direccion", e.target.value)} disabled={isSaving || isPending} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="departamento">Departamento</Label>
-            <Select
-              value={formData.DepartamentoCod?.toString() ?? ""}
-              onValueChange={async (value) => {
-                const id = Number(value);
-                const dep = departamento.find((a) => a.Cod === id);
-                if (dep) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    DepartamentoCod: dep.Cod,
-                    NombreDepartamento: dep.Nombre,
-                    MunicipioCod: 0,
-                    NombreMunicipio: "",
-                  }));
-
-                  // 🔥 Cargar municipios correctamente
-                  const municipioRes = await regionService.getMunicipio(dep.Cod);
-                  if (municipioRes.success) {
-                    setMunicipio(municipioRes.data);
-                  } else {
-                    console.error("Error al obtener municipios:", municipioRes.error);
-                    setMunicipio([]);
-                  }
-                }
-              }}
-
-              disabled={isSaving || isPending}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar Departamento" />
-              </SelectTrigger>
-              <SelectContent>
-                {departamento.map((dep) => (
-                  <SelectItem key={dep.Cod} value={dep.Cod.toString()}>
-                    {dep.Nombre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="municipio">Municipio</Label>
-            <Select
-              value={formData.MunicipioCod ? formData.MunicipioCod.toString() : ""}
-              onValueChange={(value) => {
-                const cod = Number(value);
-                const mun = municipio.find((m) => m.Cod === cod);
-                if (mun) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    MunicipioCod: mun.Cod,
-                    NombreMunicipio: mun.Nombre,
-                  }));
-                }
-              }}
-              disabled={isSaving || isPending || municipio.length === 0}
-            >
-
-
-
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar Municipio" />
-              </SelectTrigger>
-              <SelectContent>
-                {municipio.map((mun) => (
-                  <SelectItem key={mun.Cod} value={mun.Cod.toString()}>
-                    {mun.Nombre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="website">Página WEB</Label>
-            <Input id="website" value={formData.PaginaWeb} onChange={(e) => handleChange("PaginaWeb", e.target.value)} disabled={isSaving || isPending} />
-          </div>
-          <div className="hidden md:block"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2">
+              autoComplete="new-password"
+            />
+          )}
+          {isEditing && (
+            <div className="hidden md:block"></div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 w-full max-w-lg">
             <div className="flex flex-col items-center space-y-2">
               {formData.Imagenes?.find(img => img.TipoImg === "Logo") && (
                 <img
@@ -415,11 +380,9 @@ export function EntityForm({ isEditing = false, entityData }: EntityFormProps) {
           </div>
         </div>
 
-        {/* Subir Archivos */}
-
 
         {/* Botones Finales */}
-        <div className="flex justify-end space-x-4 mt-6">
+        <div className="flex justify-end space-x-4 mt-2">
           <Button
             type="button"
             variant="outline"

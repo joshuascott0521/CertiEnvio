@@ -162,11 +162,24 @@ export default function EntidadesPage() {
                       </div>
                     </div>
                     <div>
+                      {/* Aplicativo */}
                       <div>
                         <span className="font-medium">Aplicativo:</span> {entity.NombreAplicativo}
                       </div>
-                      <div>
-                        <span className="font-medium">Dirección:</span> {entity.Direccion}
+                      {/* Direccion */}
+                      <div className="relative group w-fit max-w-[250px]">
+                        <div className="truncate block relative z-10">
+                          <span className="font-medium">Dirección:</span>{" "}
+                          <span>{entity.Direccion}</span>
+                        </div>
+                        <div className="absolute z-20 left-0 right-0 bottom-full mb-2 mx-auto hidden group-hover:flex flex-col items-center
+                                        opacity-0 group-hover:opacity-100 transform scale-95 group-hover:scale-100 transition-all duration-200"
+                        >
+                          <div className="bg-blue-600 text-white text-xs rounded px-3 py-2 whitespace-normal break-words max-w-xs text-center shadow-lg">
+                            {entity.Direccion}
+                          </div>
+                          <div className="w-2 h-2 rotate-45 bg-blue-600 -mt-1 shadow-lg"></div>
+                        </div>
                       </div>
                       {entity.MunicipioCod && (
                         <div>
