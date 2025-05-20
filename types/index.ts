@@ -8,6 +8,8 @@ export interface User {
   Email: string;
   Celular: string;
   Estado: string;
+  Password: string;
+  VerifyPassword: string;
 }
 
 export interface UserType {

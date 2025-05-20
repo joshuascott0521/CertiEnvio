@@ -36,7 +36,7 @@ export const FloatingLabel: React.FC<FloatingLabelProps> = ({
         autoComplete={autoComplete}
         placeholder=" "
         disabled={disabled}
-        className={`peer w-full h-10 border border-gray-300 rounded-lg px-3 pt-5 pb-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
+        className={`peer w-full h-10 border border-gray-300 rounded-lg px-3 pt-4 pb-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
       />
       <label
         htmlFor={id}

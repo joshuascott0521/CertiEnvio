@@ -30,7 +30,7 @@ export default function EditarUsuarioPage() {
         <div>
             <DashboardHeader title="Bienvenido a CertiEnvíos" breadcrumb="CertiEnvíos / Usuarios / Editar"/>
             <div className="p-6">
-                <UserForm isEditing userData={data || undefined}/>
+                <UserForm isEditing  userData={data || undefined}/>
             </div>
         </div>
     )

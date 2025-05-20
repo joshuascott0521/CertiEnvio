@@ -120,6 +120,21 @@ export const userService = {
     }
   },
 
+  createProfile: async (
+    userData: Partial<User>
+  ): Promise<ApiResponse<User>> => {
+    try{
+      const response = await api.post("/Usuario/Create", userData);
+      return {success: true, data: response.data};
+    }catch(error: any){
+      return{
+        success: false,
+        data: {} as User,
+        error: error.response?.data?.message || "Error al crear usuario",
+      };
+    }
+  },
+
   changePassword: async (payload: {
     Id: string;
     PasswordAntigua: string;
