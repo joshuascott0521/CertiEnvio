@@ -8,7 +8,7 @@ export default function Loading() {
       {/* Header */}
       <header className="bg-sky-500 text-white p-4 flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <h1 className="text-2xl font-bold">Bienvenido a Envia+</h1>
+          <h1 className="text-2xl font-bold">Bienvenido a CertiEnvíos</h1>
         </div>
         <div className="flex items-center">
           <Mail className="h-8 w-8 text-white" />

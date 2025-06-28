@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function Loading() {
   return (
     <div>
-      <DashboardHeader title="Inicio" breadcrumb="Envia+ / Inicio" />
+      <DashboardHeader title="Inicio" breadcrumb="CertiEnvíos / Inicio" />
       <div className="p-6">
         <h2 className="text-2xl font-bold">Panel Principal</h2>
 

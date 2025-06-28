@@ -1,116 +1,104 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Download, Mail, Search } from "lucide-react"
+import { useState, useEffect, useTransition, useRef } from "react"
+import { Search } from "lucide-react"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-
-interface Email {
-  id: number
-  entidad: string
-  aplicativo: string
-  remitente: string
-  destinatario: string
-  correo: string
-  asunto: string
-  fecha: string
-  estado: string
-}
-
-const emails: Email[] = [
-  {
-    id: 1,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "Asignación nuevo PQR",
-    fecha: "31/12/2025",
-    estado: "Notificado",
-  },
-  {
-    id: 2,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "Asignación nuevo PQR",
-    fecha: "31/12/2025",
-    estado: "Enviado",
-  },
-  {
-    id: 3,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "Asignación nuevo PQR",
-    fecha: "31/12/2025",
-    estado: "Abierto",
-  },
-  {
-    id: 4,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "Asignación nuevo PQR",
-    fecha: "31/12/2025",
-    estado: "Rechazado",
-  },
-  {
-    id: 5,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "Asignación nuevo PQR",
-    fecha: "31/12/2025",
-    estado: "Enviado",
-  },
-]
-
-// Función para obtener el color de fondo según el estado
-function getStatusBgColor(status: string): string {
-  switch (status) {
-    case "Notificado":
-      return "bg-green-500"
-    case "Enviado":
-      return "bg-gray-600"
-    case "Abierto":
-      return "bg-yellow-500"
-    case "Rechazado":
-      return "bg-red-500"
-    default:
-      return "bg-gray-500"
-  }
-}
+import { Email } from "@/types"
+import EmailCard from "@/components/ui/emailCard"
+import { useRouter } from "next/navigation"
+import { messageService } from "@/services/api"
 
 export default function EnvioEmailPage() {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<Email[]>([])
 
+  const ultimaPaginaDetectada = useRef(false);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const fetchEmail = async (currentPage: number) => {
+    if (!hasMore) return;
+
+    setIsLoadingMore(true);
+
+    try {
+      const response = await messageService.getEmailAll({ page: currentPage, size: pageSize });
+
+      if (response.success && Array.isArray(response.data)) {
+        console.log("Página:", currentPage, "Items:", response.data.length);
+
+        if (response.data.length === 0) {
+          // El backend no devolvió más datos → no hay más
+          setHasMore(false);
+        } else {
+          setData((prev) => [...prev, ...response.data]);
+        }
+      } else {
+        // Por si success: false o data inesperada
+        console.warn("Respuesta inesperada del backend");
+        setHasMore(false);
+      }
+    } catch (error: any) {
+      console.error("Error al obtener emails:", error);
+
+      // Si viene un error tipo 404 o red (como estás viendo)
+      setHasMore(false); // ⛔️ Ya no sigas intentando
+    }
+
+    setIsLoadingMore(false);
+  };
+
+
   useEffect(() => {
-    // Simular carga de datos
-    const timer = setTimeout(() => {
-      setData(emails)
-      setLoading(false)
-    }, 1000)
-    return () => clearTimeout(timer)
-  }, [])
+    setLoading(true);
+    setPage(1);
+    setData([]);        // Limpia resultados anteriores si recargas
+    setHasMore(true);   // 👈 importante: se debe reiniciar
+    fetchEmail(1).then(() => setLoading(false));
+  }, []);
+
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const handleScroll = () => {
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 20 && !isLoadingMore && hasMore) {
+        setPage((prev) => prev + 1);
+      }
+    };
+
+    el.addEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [hasMore, isLoadingMore]);
+
+  useEffect(() => {
+    if (page === 1 || !hasMore) return;
+    fetchEmail(page);
+  }, [page]);
+
+
+
+  const handleMessageClick = (id: string) => {
+    startTransition(() => {
+      window.open(`/mensaje-email/${id}`, "_blank")
+    })
+  }
 
   return (
     <div>
-      <DashboardHeader title="Bienvenido a Envia+" breadcrumb="Envia+ / Inicio / Email" />
-      <div className="p-6">
+      <DashboardHeader title="Bienvenido a CertiEnvíos" breadcrumb="CertiEnvíos / Inicio / Email" />
+      <div className="px-6 py-3">
         <div className="flex gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -148,90 +136,56 @@ export default function EnvioEmailPage() {
           </Select>
         </div>
 
-        <div className="space-y-4">
-          {loading
-            ? // Skeleton loader para emails
-              Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="border rounded-lg p-4 flex justify-between items-center">
-                  <div className="flex">
-                    <div className="mr-4">
-                      <Skeleton className="h-10 w-10 rounded-md" />
-                    </div>
-                    <div>
-                      <Skeleton className="h-4 w-32 mb-2" />
-                      <Skeleton className="h-4 w-24 mb-2" />
-                      <Skeleton className="h-4 w-40" />
-                    </div>
+        {loading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="border rounded-lg p-4 flex justify-between items-center">
+                <div className="flex">
+                  <div className="mr-4">
+                    <Skeleton className="h-10 w-10 rounded-md" />
                   </div>
-
-                  <div className="flex-1 mx-8">
-                    <Skeleton className="h-4 w-40 mb-2" />
+                  <div>
                     <Skeleton className="h-4 w-32 mb-2" />
-                    <Skeleton className="h-4 w-48" />
-                  </div>
-
-                  <div className="mr-4">
-                    <Skeleton className="h-4 w-48 mb-2" />
-                    <Skeleton className="h-6 w-24 rounded-full" />
-                  </div>
-
-                  <div>
-                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-4 w-24 mb-2" />
+                    <Skeleton className="h-4 w-40" />
                   </div>
                 </div>
-              ))
-            : // Datos reales
-              data.map((email) => (
-                <div key={email.id} className="border rounded-lg p-4 flex justify-between items-center">
-                  <div className="flex">
-                    <div className="mr-4">
-                      <Mail className="h-10 w-10 text-gray-400" />
-                    </div>
-                    <div>
-                      <div>
-                        <span className="font-medium">Entidad:</span> {email.entidad}
-                      </div>
-                      <div>
-                        <span className="font-medium">Aplicativo:</span> {email.aplicativo}
-                      </div>
-                      <div>
-                        <span className="font-medium">Remitente:</span> {email.remitente}
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="flex-1 mx-8">
-                    <div>
-                      <span className="font-medium">Destinatario:</span> {email.destinatario}
-                    </div>
-                    <div>
-                      <span className="font-medium">Correo:</span> {email.correo}
-                    </div>
-                    <div>
-                      <span className="font-medium">Asunto:</span> {email.asunto}
-                    </div>
-                  </div>
-
-                  <div className="mr-4">
-                    <div>
-                      <span className="font-medium">Fecha Ultimo Estado:</span> {email.fecha}
-                    </div>
-                    <div className="flex items-center">
-                      <span className="font-medium mr-2">Estado:</span>
-                      <span className={`text-white text-sm px-3 py-0.5 rounded-full ${getStatusBgColor(email.estado)}`}>
-                        {email.estado}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Button variant="ghost" className="text-gray-400 hover:text-gray-600">
-                      <Download className="h-6 w-6" />
-                    </Button>
-                  </div>
+                <div className="flex-1 mx-8">
+                  <Skeleton className="h-4 w-40 mb-2" />
+                  <Skeleton className="h-4 w-32 mb-2" />
+                  <Skeleton className="h-4 w-48" />
                 </div>
-              ))}
-        </div>
+
+                <div className="mr-4">
+                  <Skeleton className="h-4 w-48 mb-2" />
+                  <Skeleton className="h-6 w-24 rounded-full" />
+                </div>
+
+                <div>
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div
+            ref={scrollRef}
+            className="h-[520px] overflow-y-auto space-y-4 rounded-lg border border-gray-200 bg-white shadow-sm px-4 py-3"
+          >
+            {Array.from(new Map(data.map((msg) => [msg.Id, msg])).values()).map((message) => (
+              <EmailCard key={message.Id} message={message} onClick={handleMessageClick} />
+            ))}
+
+            {hasMore && (
+              <p className="text-center text-gray-400">Cargando datos...</p>
+            )}
+
+            {!hasMore && data.length > 0 && (
+              <p className="text-center text-gray-400">No hay más resultados.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

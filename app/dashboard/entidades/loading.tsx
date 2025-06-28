@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function Loading() {
   return (
     <div>
-      <DashboardHeader title="Entidades" breadcrumb="Envia+ / Entidades" />
+      <DashboardHeader title="Entidades" breadcrumb="CertiEnvíos / Entidades" />
       <div className="p-6">
         <Button className="mb-4 bg-green-500 hover:bg-green-600 text-white">
           <PlusCircle className="h-4 w-4 mr-2" />

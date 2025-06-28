@@ -6,10 +6,10 @@ export default function Loading() {
     <div>
       <DashboardHeader
         title="Envió Email SMS"
-        breadcrumb="Envia+ / Envió Email SMS"
+        breadcrumb="CertiEnvíos / Envió Email SMS"
       />
       <div className="p-6">
-        <h2 className="text-2xl font-bold">Envío de Correos SMS</h2>
+        <h2 className="text-2xl font-bold">Envío de SMS</h2>
 
         <div className="flex gap-4 mb-6 mt-6">
           <Skeleton className="h-10 flex-1" />

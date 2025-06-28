@@ -2,52 +2,12 @@
 
 import { useRouter } from "next/navigation"
 import { useState, useEffect, use } from "react"
-import { Mail, FileText, Mic, CirclePlus, Wifi, Signal, Battery } from "lucide-react"
+import { Mail, FileText, Mic, CirclePlus, Wifi, Signal, Battery, MailWarning, MailX, MailQuestion, MailMinus, MailCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { EnvioSMSDTO } from "@/types"
+import { messageService } from "@/services/api"
 
-interface MessageData {
-  id: number
-  entidad: string
-  aplicativo: string
-  remitente: string
-  destinatario: string
-  correoDestinatario: string
-  asunto: string
-  fecha: string
-  estado: string
-  celular: string
-  contenido: string
-  historial: Array<{
-    estado: string
-    fecha: string
-  }>
-}
-
-// Datos de ejemplo para el mensaje
-const messageData: MessageData = {
-  id: 1,
-  entidad: "Alcaldía de Barranca",
-  aplicativo: "PQR+",
-  remitente: "Alcaldia@prueba.com",
-  destinatario: "Andrés Moreno Pérez",
-  correoDestinatario: "Andres@prueba.com",
-  asunto: "ASIGNACIÓN DE NUEVO PQR",
-  fecha: "31/12/2025",
-  estado: "Notificado",
-  celular: "3112343344",
-  contenido: "Se le ha asignado un PQR con radicado No. 20231025 de la secretaria de hacienda municipal de Barranca",
-  historial: [
-    { estado: "Enviado", fecha: "31/12/2025" },
-    { estado: "Notificado", fecha: "31/12/2025" },
-  ],
-}
-
-interface MensajeSMSPageProps {
-  params: {
-    id: string
-  }
-}
 
 export default function MensajeSMSPage({
   params,
@@ -58,25 +18,62 @@ export default function MensajeSMSPage({
   const { id } = use(params)
   const parsedId = parseInt(id)
   const [loading, setLoading] = useState(true)
-  const [message, setMessage] = useState<MessageData | null>(null)
+  const [message, setMessage] = useState<EnvioSMSDTO | null>(null)
+  const ultimoEstado = message?.Detalles?.at(-1)?.Estado;
 
   useEffect(() => {
-    // Simular carga de datos
-    const timer = setTimeout(() => {
-      setMessage(messageData)
-      setLoading(false)
-    }, 800)
-    return () => clearTimeout(timer)
+    const fetchSms = async () => {
+      try {
+        const response = await messageService.getMessageById(parsedId);
+        if (!response.success) throw new Error(response.error);
+        setMessage(response.data)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchSms();
   }, [parsedId])
 
   const handleBack = () => router.back()
+
+  const formatearFecha = (fechaStr: string): string => {
+    const fecha = new Date(fechaStr);
+    return fecha.toLocaleString("es-CO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  const getEstadoColor = (estado?: string) => {
+    switch (estado) {
+      case "Notificado":
+        return "bg-green-500"
+      case "Enviado":
+        return "bg-gray-500"
+      case "Spam":
+        return "bg-red-800"
+      case "Rechazado":
+        return "bg-red-500"
+      case "Sin notificar":
+        return "bg-sky-500"
+      default:
+        return "bg-gray-500"
+    }
+  };
+
 
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
         <header className="bg-sky-500 text-white p-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold">Bienvenido a Envia+</h1>
+            <h1 className="text-2xl font-bold">Bienvenido a CertiEnvíos</h1>
           </div>
           <div className="flex items-center">
             <Mail className="h-8 w-8 text-white" />
@@ -98,7 +95,7 @@ export default function MensajeSMSPage({
       {/* Header */}
       <header className="bg-sky-500 text-white p-4 flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <h1 className="text-2xl font-bold">Bienvenido a Envia+</h1>
+          <h1 className="text-2xl font-bold">Bienvenido a CertiEnvíos</h1>
         </div>
         <div className="flex items-center">
           <Mail className="h-8 w-8 text-white" />
@@ -112,10 +109,14 @@ export default function MensajeSMSPage({
           {/* Encabezado del mensaje */}
           <div className="flex items-center">
             <img src="/3.svg" alt="Logo-sms" className="w-10 h-10" />
-            <h2 className="pl-2 text-xl font-bold flex-1">Asunto: {message?.asunto}</h2>
+            <h2 className="pl-2 text-xl font-bold flex-1">Asunto: {message?.Asunto}</h2>
             <div className="flex flex-col items-end">
-              <div className="bg-green-600 text-white px-4 py-1 rounded-md font-medium">NOTIFICADO</div>
-              <div className="text-sm mt-1">Fecha: {message?.fecha}</div>
+              <div className={`${getEstadoColor(ultimoEstado)} text-white px-4 py-1 rounded-md font-medium`}>
+                {ultimoEstado || "SIN ESTADO"}
+              </div>
+              <div className="text-sm mt-1">
+                Fecha: {message?.Detalles?.at(-1)?.Fecha ? formatearFecha(message.Detalles.at(-1)!.Fecha) : "Desconocida"}
+              </div>
             </div>
           </div>
           <hr className="border-b border-gray-300 my-2" />
@@ -127,9 +128,9 @@ export default function MensajeSMSPage({
               <h3 className="px-3 py-2 font-bold">Remitente</h3>
               <CardContent className="pb-2 px-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div><span className="font-medium">Entidad:</span> {message?.entidad}</div>
-                  <div><span className="font-medium">Aplicativo:</span> {message?.aplicativo}</div>
-                  <div><span className="font-medium">Correo:</span> {message?.remitente}</div>
+                  <div><span className="font-medium">Entidad: </span> {message?.NombreEntidad}</div>
+                  <div className="flex flex-row items-center justify-center"><span className="font-medium">Aplicativo:&nbsp;</span> {message?.NombreAplicativo}</div>
+                  <div className="col-span-2"><span className="font-medium">Correo: </span> {message?.EmailEntidad}</div>
                 </div>
               </CardContent>
             </Card>
@@ -137,9 +138,8 @@ export default function MensajeSMSPage({
               <h3 className="font-bold px-3 py-2">Destinatario</h3>
               <CardContent className="pb-2 px-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div><span className="font-medium">Nombre Destinatario:</span> {message?.destinatario}</div>
-                  <div><span className="font-medium">Celular:</span> {message?.celular}</div>
-                  <div><span className="font-medium">Correo Destinatario:</span> {message?.correoDestinatario}</div>
+                  <div><span className="font-medium">Nombre Destinatario:</span> {message?.NombreTercero}</div>
+                  <div><span className="font-medium">Contacto:</span> {message?.Destinatario}</div>
                 </div>
               </CardContent>
             </Card>
@@ -170,18 +170,13 @@ export default function MensajeSMSPage({
                           className="w-6 h-6 object-contain"
                         />
                       </div>
-                      <span className="text-[11px] text-gray-700">{message?.celular}</span>
+                      <span className="text-[11px] text-gray-700">{message?.Remitente}</span>
                     </div>
                     <hr className="absolute top-28 left-5 right-5 border-t border-gray-150 mt-2" />
                     {/* Contenido del mensaje con scroll */}
                     <div className="scroll-message absolute bottom-20 left-7 right-7 bg-gray-50 text-black text-xs p-3 rounded-lg shadow max-h-40 overflow-y-auto">
-                      {message?.contenido}
+                      {message?.Mensaje}
                     </div>
-
-
-
-
-
                     {/* Barra de mensaje */}
                     <div className="absolute bottom-6 left-7 right-7 flex items-center justify-between border border-gray-300 rounded-full px-4 py-[6px] bg-white shadow-sm">
                       <CirclePlus className="text-gray-500" />
@@ -190,7 +185,6 @@ export default function MensajeSMSPage({
                       </span>
                       <Mic className="text-gray-500" />
                     </div>
-
                   </div>
                 </div>
               </CardContent>
@@ -199,20 +193,37 @@ export default function MensajeSMSPage({
               <Card className="pt-2 px-4 pb-4">
                 <h3 className="font-bold mb-4">Cronología SMS</h3>
                 <div className="relative space-y-6">
-                  {message?.historial.map((item, index) => (
+                  {message?.Detalles.map((item, index) => (
                     <div key={index} className="relative flex items-start gap-3">
                       {/* Línea punteada entre íconos excepto el último */}
-                      {index < message.historial.length - 1 && (
+                      {index < message.Detalles.length - 1 && (
                         <span className="absolute top-8 left-[17px] h-full border-l-2 border-dashed border-gray-400 z-0"></span>
                       )}
                       {/* Ícono */}
-                      <div className="relative z-10 bg-sky-100 rounded-full p-2">
-                        <Mail className={`h-5 w-5 ${item.estado === "Enviado" ? "text-sky-500" : "text-green-500"}`} />
+                      <div className="relative z-10 bg-gray-100 rounded-full p-2">
+                        {item.Estado === "Enviado" &&
+                          <Mail className="h-5 w-5 text-gray-500" />
+                        }
+                        {item.Estado === "Sin notificar" &&
+                          <MailQuestion className="h-5 w-5 text-sky-500" />
+                        }
+                        {item.Estado === "Rechazado" &&
+                          <MailX className="h-5 w-5 text-red-500" />
+                        }
+                        {item.Estado === "Spam" &&
+                          <MailMinus className="h-5 w-5 text-red-800" />
+                        }
+                        {item.Estado === "Notificado" &&
+                          <MailCheck className="h-5 w-5 text-green-500" />
+                        }
+
                       </div>
                       {/* Texto */}
                       <div>
-                        <div className="font-medium">{item.estado}</div>
-                        <div className="text-sm text-gray-500">Fecha: {item.fecha}</div>
+                        <div className="font-medium">{item.Estado}</div>
+                        <div className="text-sm text-gray-500">
+                          Fecha: {item.Fecha ? formatearFecha(item.Fecha) : "Desconocida"}
+                        </div>
                       </div>
                     </div>
                   ))}

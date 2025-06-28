@@ -12,7 +12,7 @@ export default function DashboardPage() {
       <DashboardHeader title="Inicio" breadcrumb="CertiEnvíos / Inicio" />
       <div className="p-6">
         <h2 className="text-2xl font-bold">Panel Principal</h2>
-        <p>Bienvenido al sistema de envío de correos Envia+</p>
+        <p>Bienvenido al sistema de envío de correos CertiEnvíos</p>
       </div>
     </div>
   )

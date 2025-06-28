@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { ApiResponse, User, Entity, Message, Aplication, Departamento, Municipio, UserType } from "@/types";
+import type { ApiResponse, User, Entity, Aplication, Departamento, Municipio, UserType, EnvioSMSDTO, Email } from "@/types";
 import Cookies from "js-cookie";
 
 const API_URL = "https://apienviaplusdev.creapptech.com";
@@ -11,6 +11,11 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+export interface PaginacionParams {
+  page: number;
+  size: number;
+}
 
 // Interceptor para agregar el token a las peticiones
 api.interceptors.request.use((config) => {
@@ -123,11 +128,11 @@ export const userService = {
   createProfile: async (
     userData: Partial<User>
   ): Promise<ApiResponse<User>> => {
-    try{
+    try {
       const response = await api.post("/Usuario/Create", userData);
-      return {success: true, data: response.data};
-    }catch(error: any){
-      return{
+      return { success: true, data: response.data };
+    } catch (error: any) {
+      return {
         success: false,
         data: {} as User,
         error: error.response?.data?.message || "Error al crear usuario",
@@ -157,12 +162,12 @@ export const userService = {
 
 export const userTypeService = {
   getAll: async (): Promise<ApiResponse<UserType[]>> => {
-    try{
+    try {
       const response = await api.get("/tipousuario/ObtenerAllTipoUsuario");
-      return {success: true, data: response.data}
-    }catch(error:any){
+      return { success: true, data: response.data }
+    } catch (error: any) {
       console.error("Error al traer tipos de usuarios", error.response)
-      return{
+      return {
         success: false,
         data: [],
         error: error.response?.data?.message || "Error al obtener tipos de usuarios",
@@ -317,40 +322,51 @@ export const entityService = {
 
 // Servicios de mensajes
 export const messageService = {
-  getEmails: async (): Promise<ApiResponse<Message[]>> => {
+  getEmailAll: async ({ page, size }: PaginacionParams): Promise<ApiResponse<Email[]>> => {
     try {
-      const response = await api.get("/Mensaje/GetEmails");
+      const response = await api.get<Email[]>(`/EnvioEmail/GetAllEnvioEmail/${page}/${size}`);
       return { success: true, data: response.data };
     } catch (error: any) {
       return {
         success: false,
         data: [],
-        error: error.response?.data?.message || "Error al obtener emails",
+        error: error.response?.data?.message || "Error al obtener Emails"
       };
     }
   },
-
-  getSMS: async (): Promise<ApiResponse<Message[]>> => {
+  getEmailById: async (id: number): Promise<ApiResponse<Email>> => {
     try {
-      const response = await api.get("/Mensaje/GetSMS");
+      const response = await api.get(`/EnvioEmail/Get/${id}`);
+      return { success: true, data: response.data };
+    } catch (error: any) {
+      return {
+        success: false,
+        data: {} as Email,
+        error: error.response?.data?.message || "Error al obtener el mensaje",
+      };
+    }
+  },
+  getSmsAll: async ({ page, size }: PaginacionParams): Promise<ApiResponse<EnvioSMSDTO[]>> => {
+    try {
+      const response = await api.get<EnvioSMSDTO[]>(`/EnvioUnitario/ObtenerAllEnvio/${page}/${size}`);
       return { success: true, data: response.data };
     } catch (error: any) {
       return {
         success: false,
         data: [],
-        error: error.response?.data?.message || "Error al obtener SMS",
+        error: error.response?.data?.message || "Error al obtener mensajes"
       };
     }
   },
 
-  getMessageById: async (id: number): Promise<ApiResponse<Message>> => {
+  getMessageById: async (id: number): Promise<ApiResponse<EnvioSMSDTO>> => {
     try {
-      const response = await api.get(`/Mensaje/Get/${id}`);
+      const response = await api.get(`/EnvioUnitario/ObtenerItemEnvio/${id}`);
       return { success: true, data: response.data };
     } catch (error: any) {
       return {
         success: false,
-        data: {} as Message,
+        data: {} as EnvioSMSDTO,
         error: error.response?.data?.message || "Error al obtener el mensaje",
       };
     }
@@ -358,3 +374,4 @@ export const messageService = {
 };
 
 export default api;
+

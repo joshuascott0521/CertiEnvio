@@ -1,120 +1,72 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState, useEffect, useTransition } from "react"
+import { useState, useEffect, useTransition, useRef } from "react"
 import { Download, MessageSquare, Search } from "lucide-react"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EnvioSMSDTO } from "@/types"
+import { messageService } from "@/services/api"
+import SmsCard from "@/components/ui/SmsCard"
 
-interface Message {
-  id: number
-  entidad: string
-  aplicativo: string
-  remitente: string
-  destinatario: string
-  correo: string
-  asunto: string
-  fecha: string
-  estado: string
-  celular: string
-}
 
-const messages: Message[] = [
-  {
-    id: 1,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "ASIGNANCION DE NUEVO PQR",
-    fecha: "31/12/2025",
-    estado: "Notificado",
-    celular: "3112343344",
-  },
-  {
-    id: 2,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "Asignación nuevo PQR",
-    fecha: "31/12/2025",
-    estado: "Enviado",
-    celular: "3112343344",
-  },
-  {
-    id: 3,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "Asignación nuevo PQR",
-    fecha: "31/12/2025",
-    estado: "Abierto",
-    celular: "3112343344",
-  },
-  {
-    id: 4,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "Asignación nuevo PQR",
-    fecha: "31/12/2025",
-    estado: "Rechazado",
-    celular: "3112343344",
-  },
-  {
-    id: 5,
-    entidad: "Alcaldía de Baranca",
-    aplicativo: "PQR+",
-    remitente: "Alcaldia@prueba.com",
-    destinatario: "Andrés Moreno Pérez",
-    correo: "Andresperez@prueba.com",
-    asunto: "Asignación nuevo PQR",
-    fecha: "31/12/2025",
-    estado: "Enviado",
-    celular: "3112343344",
-  },
-]
+
 
 // Función para obtener el color de fondo según el estado
-function getStatusBgColor(status: string): string {
-  switch (status) {
-    case "Notificado":
-      return "bg-green-500"
-    case "Enviado":
-      return "bg-gray-600"
-    case "Abierto":
-      return "bg-yellow-500"
-    case "Rechazado":
-      return "bg-red-500"
-    default:
-      return "bg-gray-500"
-  }
-}
+
 
 export default function EnvioSMSPage() {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState<Message[]>([])
+  const [data, setData] = useState<EnvioSMSDTO[]>([])
+
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const fetchSms = async (currentPage: number) => {
+    setIsLoadingMore(true);
+    const response = await messageService.getSmsAll({ page: currentPage, size: pageSize });
+
+    if (response.success) {
+      if (response.data.length < pageSize) setHasMore(false);
+      setData((prev) => [...prev, ...response.data]);
+    }
+    setIsLoadingMore(false);
+  };
 
   useEffect(() => {
-    // Simular carga de datos
-    const timer = setTimeout(() => {
-      setData(messages)
-      setLoading(false)
-    }, 1000)
-    return () => clearTimeout(timer)
-  }, [])
+    setLoading(true);
+    fetchSms(1).then(() => {
+      setLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const handleScroll = () => {
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 20 && !isLoadingMore && hasMore) {
+        setPage((prev) => prev + 1);
+      }
+    };
+
+    el.addEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [hasMore, isLoadingMore]);
+
+  useEffect(() => {
+    if (page === 1) return; // ya se cargó
+    fetchSms(page);
+  }, [page]);
+
 
   const handleMessageClick = (id: number) => {
     startTransition(() => {
@@ -124,8 +76,8 @@ export default function EnvioSMSPage() {
 
   return (
     <div>
-      <DashboardHeader title="Bienvenido a Envia+" breadcrumb="Envia+ / Inicio / SMS" />
-      <div className="p-6">
+      <DashboardHeader title="Bienvenido a CertiEnvíos" breadcrumb="CertiEnvíos / Inicio / SMS" />
+      <div className="px-6 py-3">
         <div className="flex gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -163,96 +115,58 @@ export default function EnvioSMSPage() {
           </Select>
         </div>
 
-        <div className="space-y-4">
-          {loading
-            ? // Skeleton loader para mensajes
-              Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="border rounded-lg p-4 flex justify-between items-center">
-                  <div className="flex">
-                    <div className="mr-4">
-                      <Skeleton className="h-10 w-10 rounded-md" />
-                    </div>
-                    <div>
-                      <Skeleton className="h-4 w-32 mb-2" />
-                      <Skeleton className="h-4 w-24 mb-2" />
-                      <Skeleton className="h-4 w-40" />
-                    </div>
-                  </div>
 
-                  <div className="flex-1 mx-8">
-                    <Skeleton className="h-4 w-40 mb-2" />
-                    <Skeleton className="h-4 w-32 mb-2" />
-                    <Skeleton className="h-4 w-48" />
-                  </div>
-
+        {loading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="border rounded-lg p-4 flex justify-between items-center">
+                <div className="flex">
                   <div className="mr-4">
-                    <Skeleton className="h-4 w-48 mb-2" />
-                    <Skeleton className="h-6 w-24 rounded-full" />
+                    <Skeleton className="h-10 w-10 rounded-md" />
                   </div>
-
                   <div>
-                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-4 w-32 mb-2" />
+                    <Skeleton className="h-4 w-24 mb-2" />
+                    <Skeleton className="h-4 w-40" />
                   </div>
                 </div>
-              ))
-            : // Datos reales
-              data.map((message) => (
-                <div
-                  key={message.id}
-                  className="border rounded-lg p-4 flex justify-between items-center cursor-pointer hover:bg-gray-50"
-                  onClick={() => handleMessageClick(message.id)}
-                >
-                  <div className="flex">
-                    <div className="mr-4">
-                      <img src="/3.svg" alt="Logo-sms" className="w-10 h-10"/>
-                    </div>
-                    <div>
-                      <div>
-                        <span className="font-medium">Entidad:</span> {message.entidad}
-                      </div>
-                      <div>
-                        <span className="font-medium">Aplicativo:</span> {message.aplicativo}
-                      </div>
-                      <div>
-                        <span className="font-medium">Remitente:</span> {message.remitente}
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="flex-1 mx-8">
-                    <div>
-                      <span className="font-medium">Destinatario:</span> {message.destinatario}
-                    </div>
-                    <div>
-                      <span className="font-medium">Correo:</span> {message.correo}
-                    </div>
-                    <div>
-                      <span className="font-medium">Asunto:</span> {message.asunto}
-                    </div>
-                  </div>
-
-                  <div className="mr-4">
-                    <div>
-                      <span className="font-medium">Fecha Ultimo Estado:</span> {message.fecha}
-                    </div>
-                    <div className="flex items-center">
-                      <span className="font-medium mr-2">Estado:</span>
-                      <span
-                        className={`text-white text-sm px-3 py-0.5 rounded-full ${getStatusBgColor(message.estado)}`}
-                      >
-                        {message.estado}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <Button variant="ghost" className="text-gray-400 hover:text-gray-600">
-                      <Download className="h-6 w-6" />
-                    </Button>
-                  </div>
+                <div className="flex-1 mx-8">
+                  <Skeleton className="h-4 w-40 mb-2" />
+                  <Skeleton className="h-4 w-32 mb-2" />
+                  <Skeleton className="h-4 w-48" />
                 </div>
-              ))}
-        </div>
+
+                <div className="mr-4">
+                  <Skeleton className="h-4 w-48 mb-2" />
+                  <Skeleton className="h-6 w-24 rounded-full" />
+                </div>
+
+                <div>
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : ( // Datos reales
+          <div
+            ref={scrollRef}
+            className="h-[520px] overflow-y-auto space-y-4 rounded-lg border border-gray-200 bg-white shadow-sm px-4 py-3"
+          >
+            {Array.from(new Map(data.map((msg) => [msg.Id, msg])).values()).map((message) => (
+              <SmsCard key={message.Id} message={message} onClick={handleMessageClick} />
+            ))}
+
+
+            {isLoadingMore && data.length > 0 && (
+              <p className="text-center text-gray-400">Cargando más resultados...</p>
+            )}
+
+            {!hasMore && data.length > 0 && (
+              <p className="text-center text-gray-400">No hay más resultados.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

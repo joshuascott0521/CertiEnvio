@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function Loading() {
   return (
     <div>
-      <DashboardHeader title="Configuración" breadcrumb="Envia+ / Configuración" />
+      <DashboardHeader title="Configuración" breadcrumb="CertiEnvíos / Configuración" />
       <div className="p-6">
         <h2 className="text-2xl font-bold">Configuración del Sistema</h2>
 

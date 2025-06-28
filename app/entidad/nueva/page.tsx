@@ -3,14 +3,14 @@ import { EntityForm } from "@/components/entity-form"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Envia+ | Nueva Entidad",
-  description: "Crear una nueva entidad en el sistema Envia+",
+  title: "CertiEnvíos | Nueva Entidad",
+  description: "Crear una nueva entidad en el sistema CertiEnvíos",
 }
 
 export default function NuevaEntidadPage() {
   return (
     <div>
-      <DashboardHeader title="Bienvenido a Envia+" breadcrumb="Envia+ / Entidades / Agregar" />
+      <DashboardHeader title="Bienvenido a CertiEnvíos" breadcrumb="CertiEnvíos / Entidades / Agregar" />
       <div className="p-6">
         <EntityForm />
       </div>

@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Envia+ | Recuperar Contraseña",
-  description: "Recupera tu contraseña para acceder al sistema Envia+",
+  title: "CertiEnvíos | Recuperar Contraseña",
+  description: "Recupera tu contraseña para acceder al sistema CertiEnvíos",
 }
 
 export default function ForgotPasswordPage() {

@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function Loading() {
   return (
     <div>
-      <DashboardHeader title="Bienvenido a Envia+" breadcrumb="Envia+ / Inicio / SMS" />
+      <DashboardHeader title="Bienvenido a CertiEnvíos" breadcrumb="CertiEnvíos / Inicio / SMS" />
       <div className="p-6">
         <div className="flex gap-4 mb-6">
           <Skeleton className="h-10 flex-1" />

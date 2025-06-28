@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "CertiEnvíos | Login",
-  description: "Iniciar sesión en el sistema de envío de correos Envia+",
+  description: "Iniciar sesión en el sistema de envío de correos CertiEnvíos",
 }
 
 export default function LoginPage() {

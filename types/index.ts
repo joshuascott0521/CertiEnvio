@@ -34,6 +34,41 @@ export interface Municipio{
   Nombre: string
 }
 
+export interface EnvioDetalle {
+  Item: number;
+  Fecha: string; 
+  Estado: string;
+  Ip: string;
+  Observacion: string;
+  JsonResponse: string; 
+}
+
+export interface EnvioSMSDTO {
+  Id: number;
+  EntidadId: number;
+  NombreEntidad: string;
+  CelularEntidad: string;
+  EmailEntidad: string;
+  AplicativoId: number;
+  NombreAplicativo: string;
+  TipoEnvioId: number;
+  NombreTipoEnvio: string;
+  NombreApi: string;
+  TerceroId: string;
+  NombreTercero: string;
+  Destinatario: string;
+  Asunto: string;
+  Mensaje: string;
+  Certificado: number;
+  Flash: string;
+  SmsUnitTipo: string;
+  Precio: number;
+  Firma: string;
+  Remitente: string;
+  Detalles: EnvioDetalle[];
+}
+
+
 export interface Entity {
   Id: number;
   Nombre: string;
@@ -58,23 +93,21 @@ export interface Entity {
   }>;
 }
 
-export interface Message {
-  id: number;
-  entidad: string;
-  aplicativo: string;
-  remitente: string;
-  destinatario: string;
-  correo: string;
-  asunto: string;
-  fecha: string;
-  estado: string;
-  celular: string;
-  contenido?: string;
-  correoDestinatario?: string;
-  historial?: Array<{
-    estado: string;
-    fecha: string;
-  }>;
+export interface Email{
+  Id: string,
+  EntidadId: number,
+  NombreEntidad: string,
+  Remitente: string
+  TipoEnvioId: number,
+  NombreTipoEnvio: string,
+  NombreApi: string,
+  NombreAplicativo: string,
+  TerceroId: string,
+  NombreTercero: string,
+  CorreoDestinatario: string,
+  Asunto: string,
+  Cuerpo: string,
+  Detalles: EnvioDetalle[];
 }
 
 export interface ApiResponse<T> {
