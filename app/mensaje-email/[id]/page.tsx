@@ -125,11 +125,9 @@ export default function MensajeEmailPage({ params }: { params: Promise<{ id: str
                             <div className={`${getEstadoColor(ultimoEstado)} text-white px-4 py-1 rounded-md font-medium`}>
                                 {ultimoEstado || "SIN ESTADO"}
                             </div>
-                            <div className="text-sm mt-1">
-                                Fecha: {message?.Detalles?.at(-1)?.Fecha ? formatearFecha(message.Detalles.at(-1)!.Fecha) : "Desconocida"}
-                            </div>
                         </div>
                     </div>
+                    <hr className="border-b border-gray-300 my-2" />
                     {/* informacion del remitente y destinatario */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
                         {/* informacion del remitente*/}
@@ -202,18 +200,21 @@ export default function MensajeEmailPage({ params }: { params: Promise<{ id: str
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center space-x-3">
-                                                            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-medium">
-                                                                {message?.Remitente.charAt(0).toUpperCase()}
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center space-x-3">
+                                                                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-medium">
+                                                                    {message?.Remitente.charAt(0).toUpperCase()}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="font-medium text-gray-900">{message?.Remitente}</div>
+                                                                    <div className="text-sm text-gray-500">Para: {message?.CorreoDestinatario}</div>
+                                                                </div>
                                                             </div>
-                                                            <div>
-                                                                <div className="font-medium text-gray-900">{message?.Remitente}</div>
-                                                                <div className="text-sm text-gray-500">Para: {message?.CorreoDestinatario}</div>
-                                                            </div>
-                                                            <div className="ml-auto text-sm text-gray-500">
+                                                            <div className="text-sm text-gray-500 ml-auto">
                                                                 {message?.Detalles?.at(-1)?.Fecha ? formatearFecha(message.Detalles.at(-1)!.Fecha) : "Desconocida"}
                                                             </div>
                                                         </div>
+
                                                     </div>
 
                                                     {/* Email Body */}
@@ -250,7 +251,7 @@ export default function MensajeEmailPage({ params }: { params: Promise<{ id: str
                                         <div className="mt-4 flex justify-center">
                                             <div className="w-20 h-8 bg-zinc-700 rounded-t-lg"></div>
                                         </div>
-                                        
+
                                     </div>
                                     {/* Monitor Base*/}
                                     <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-4 bg-zinc-700 rounded-full"></div>

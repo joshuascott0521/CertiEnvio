@@ -114,9 +114,6 @@ export default function MensajeSMSPage({
               <div className={`${getEstadoColor(ultimoEstado)} text-white px-4 py-1 rounded-md font-medium`}>
                 {ultimoEstado || "SIN ESTADO"}
               </div>
-              <div className="text-sm mt-1">
-                Fecha: {message?.Detalles?.at(-1)?.Fecha ? formatearFecha(message.Detalles.at(-1)!.Fecha) : "Desconocida"}
-              </div>
             </div>
           </div>
           <hr className="border-b border-gray-300 my-2" />
@@ -174,9 +171,10 @@ export default function MensajeSMSPage({
                     </div>
                     <hr className="absolute top-28 left-5 right-5 border-t border-gray-150 mt-2" />
                     {/* Contenido del mensaje con scroll */}
-                    <div className="scroll-message absolute bottom-20 left-7 right-7 bg-gray-50 text-black text-xs p-3 rounded-lg shadow max-h-40 overflow-y-auto">
+                    <div className="scroll-message absolute bottom-20 left-7 right-7 max-w-[200px] w-full bg-gray-50 text-black text-xs p-3 rounded-lg shadow max-h-40 overflow-y-auto break-words whitespace-pre-wrap">
                       {message?.Mensaje}
                     </div>
+
                     {/* Barra de mensaje */}
                     <div className="absolute bottom-6 left-7 right-7 flex items-center justify-between border border-gray-300 rounded-full px-4 py-[6px] bg-white shadow-sm">
                       <CirclePlus className="text-gray-500" />
