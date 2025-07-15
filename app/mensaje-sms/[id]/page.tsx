@@ -218,8 +218,8 @@ export default function MensajeSMSPage({
                       </div>
                       {/* Texto */}
                       <div>
-                        <div className="font-medium">{item.Estado}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-semibold text-sm">{item.Estado}</div>
+                        <div className="text-xs text-gray-500">
                           Fecha: {item.Fecha ? formatearFecha(item.Fecha) : "Desconocida"}
                         </div>
                       </div>
@@ -230,7 +230,7 @@ export default function MensajeSMSPage({
 
               {/* Botón de descarga */}
               <div className="flex items-center justify-center w-full p-4">
-                <button className="flex items-center bg-green-500 text-white rounded-full hover:bg-green-600 transition-all max-w-full sm:max-w-fit shadow-md">
+                <button className="flex items-center bg-green-500 text-white rounded-full hover:bg-green-600 transition-all  sm:max-w-fit shadow-md">
 
                   {/* Ícono PDF */}
                   <span className="flex items-center justify-center p-2 sm:p-3 rounded-full bg-green-500">
@@ -238,7 +238,7 @@ export default function MensajeSMSPage({
                   </span>
 
                   {/* Texto */}
-                  <span className="px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 font-semibold text-sm sm:text-base md:text-lg whitespace-nowrap">
+                  <span className="px-3 sm:px-4 md:px-3 py-2 sm:py-2.5 md:py-3 font-semibold text-sm sm:text-base md:text-lg whitespace-nowrap">
                     Descargar Certificado
                   </span>
                 </button>

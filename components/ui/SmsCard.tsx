@@ -29,7 +29,7 @@ const SmsCard: React.FC<SmsCardProps> = ({ message, onClick }) => {
     return (
         <div
             key={message.Id}
-            className="border rounded-lg p-4 flex justify-between items-center cursor-pointer hover:bg-gray-50"
+            className="border rounded-lg p-4 flex justify-row gap-2 items-center cursor-pointer hover:bg-gray-50"
             onClick={() => onClick(message.Id)}
         >
             <div className="flex">
@@ -37,28 +37,64 @@ const SmsCard: React.FC<SmsCardProps> = ({ message, onClick }) => {
                     <img src="/3.svg" alt="Logo-sms" className="w-10 h-10" />
                 </div>
                 <div>
-                    <div>
-                        <span className="font-medium">Entidad:</span> {message.NombreEntidad}
-                    </div>
-                    <div>
-                        <span className="font-medium">Aplicativo:</span> {message.NombreAplicativo}
-                    </div>
-                    <div>
-                        <span className="font-medium">Remitente:</span> {message.Remitente}
-                    </div>
+                    <p className="mb-1 text-gray-900 text-xs font-normal w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                        <span className="font-semibold text-base">Entidad: </span>
+                        <span
+                            className="font-normal text-base "
+                            title={message.NombreEntidad}
+                        >
+                            {message.NombreEntidad}
+                        </span>
+                    </p>
+                    <p className="mb-1 text-gray-900 text-xs font-normal w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                        <span className="font-semibold text-base">Aplicativo: </span>
+                        <span
+                            className="font-normal text-base "
+                            title={message.NombreAplicativo}
+                        >
+                            {message.NombreAplicativo}
+                        </span>
+                    </p>
+                    <p className="mb-1 text-gray-900 text-xs font-normal w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                        <span className="font-semibold text-base">Remitente: </span>
+                        <span
+                            className="font-normal text-base "
+                            title={message.Remitente}
+                        >
+                            {message.Remitente}
+                        </span>
+                    </p>
                 </div>
             </div>
 
-            <div className="flex-1 mx-8">
-                <div>
-                    <span className="font-medium">Destinatario:</span> {message.Destinatario}
-                </div>
-                <div>
-                    <span className="font-medium">Correo:</span> {message.EmailEntidad}
-                </div>
-                <div>
-                    <span className="font-medium">Asunto:</span> {message.Asunto}
-                </div>
+            <div className="flex-1 mx-8 min-w-0">
+                <p className="mb-1 text-gray-900 text-xs font-normal w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                    <span className="font-semibold text-base">Destinatario: </span>
+                    <span
+                        className="font-normal text-base "
+                        title={message.Destinatario}
+                    >
+                        {message.Destinatario}
+                    </span>
+                </p>
+                <p className="mb-1 text-gray-900 text-xs font-normal w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                    <span className="font-semibold text-base">Correo: </span>
+                    <span
+                        className="font-normal text-base "
+                        title={message.EmailEntidad}
+                    >
+                        {message.EmailEntidad}
+                    </span>
+                </p>
+                <p className="mb-1 text-gray-900 text-xs font-normal w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                    <span className="font-semibold text-base">Asunto: </span>
+                    <span
+                        className="font-normal text-base "
+                        title={message.Asunto}
+                    >
+                        {message.Asunto}
+                    </span>
+                </p>
             </div>
 
             <div className="mr-4">
