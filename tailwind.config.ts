@@ -60,7 +60,9 @@ const config: Config = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
-  			}
+  			},
+			login: '#37485d',
+			loginHover: '#506079'
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -88,7 +90,10 @@ const config: Config = {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out'
-  		}
+  		},
+		fontFamily:{
+			montserrat: ['Montserrat', 'sans-serif'],
+		},
   	}
   },
   plugins: [require("tailwindcss-animate")],

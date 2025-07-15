@@ -45,3 +45,30 @@
   }
 }
 
+@layer utilities {
+  .scroll-message {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent; /* Para Firefox */
+  }
+  
+  .scroll-message::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scroll-message::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scroll-message::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 6px;
+    min-height: 20px; /* reduce la altura del thumb */
+    transition: opacity 0.3s ease;
+    opacity: 0;
+  }
+  
+  .scroll-message:hover::-webkit-scrollbar-thumb {
+    opacity: 1; /* aparece al hacer hover */
+  }
+  
+}
