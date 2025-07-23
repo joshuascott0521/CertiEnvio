@@ -336,7 +336,15 @@ export const messageService = {
   },
   getEmailById: async (id: number): Promise<ApiResponse<Email>> => {
     try {
-      const response = await api.get(`/EnvioEmail/Get/${id}`);
+      // Crear una instancia de axios sin interceptores para esta llamada específica
+      const publicApi = axios.create({
+        baseURL: API_URL,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      const response = await publicApi.get(`/EnvioEmail/Get/${id}`);
       return { success: true, data: response.data };
     } catch (error: any) {
       return {
