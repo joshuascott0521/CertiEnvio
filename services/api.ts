@@ -80,14 +80,14 @@ export const authService = {
 
 // Servicios de usuario
 export const userService = {
-  getProfile: async (): Promise<ApiResponse<User[]>> => {
+  getProfile: async (): Promise<ApiResponse<User>> => {
     try {
       const response = await api.get("/Usuario/Get");
       return { success: true, data: response.data };
     } catch (error: any) {
       return {
         success: false,
-        data: [],
+        data: {} as User,
         error:
           error.response?.data?.message || "Error al obtener datos del usuario",
       };

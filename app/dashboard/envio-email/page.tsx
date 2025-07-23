@@ -3,7 +3,6 @@
 import { useState, useEffect, useTransition, useRef } from "react"
 import { Search } from "lucide-react"
 import { DashboardHeader } from "@/components/dashboard-header"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,13 +12,12 @@ import { useRouter } from "next/navigation"
 import { messageService } from "@/services/api"
 
 export default function EnvioEmailPage() {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+  
+  const [, startTransition] = useTransition()
 
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<Email[]>([])
 
-  const ultimaPaginaDetectada = useRef(false);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [hasMore, setHasMore] = useState(true);

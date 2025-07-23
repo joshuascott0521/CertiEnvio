@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Rutas que no requieren autenticación
-const publicRoutes = ["/", "/forgot-password", "/mensaje-email"];
+const publicRoutes = [
+  "/",
+  "/forgot-password",
+  "/mensaje-email",
+  "/mensaje-sms",
+];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,11 +25,6 @@ export function middleware(request: NextRequest) {
     const url = new URL("/", request.url);
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
-  }
-
-  // Si la ruta es pública y hay token, redirigir al dashboard (opcional)
-  if (isPublicRoute && authToken && pathname !== "/forgot-password") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();

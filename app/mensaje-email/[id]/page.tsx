@@ -237,13 +237,8 @@ export default function MensajeEmailPage({ params }: { params: Promise<{ id: str
                                                                 className="w-full h-full rounded-3xl"
                                                                 style={{ pointerEvents: "none", border: "none" }}
                                                             />
-
-
-
                                                         </div>
                                                     </div>
-
-
                                                 </div>
                                             </div>
                                         </div>
