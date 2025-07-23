@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Rutas que no requieren autenticación
-const publicRoutes = ["/", "/forgot-password"];
+const publicRoutes = ["/", "/forgot-password", "/mensaje-email"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
