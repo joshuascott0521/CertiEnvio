@@ -343,7 +343,7 @@ export const messageService = {
           "Content-Type": "application/json",
         },
       });
-      
+
       const response = await publicApi.get(`/EnvioEmail/Get/${id}`);
       return { success: true, data: response.data };
     } catch (error: any) {
@@ -379,6 +379,34 @@ export const messageService = {
       };
     }
   },
+
+  downloadCertificade: async (id: string): Promise<ApiResponse<void>> => {
+    try {
+      const response = await api.get(`/HtmlToPdf/descargar/${id}`,
+        {
+          responseType: "blob",
+        }
+      );
+
+      const blob = response.data;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = `Certificado Electronico ${id}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      return { success: true, data: undefined };
+    } catch (error: any) {
+      return {
+        success: false,
+        data: undefined,
+        error: error.message || "Error al descargar el archivo",
+      };
+    }
+  }
 };
 
 export default api;

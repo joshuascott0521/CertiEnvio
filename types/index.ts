@@ -44,7 +44,7 @@ export interface EnvioDetalle {
 }
 
 export interface EnvioSMSDTO {
-  Id: number;
+  Id: string;
   EntidadId: number;
   NombreEntidad: string;
   CelularEntidad: string;
