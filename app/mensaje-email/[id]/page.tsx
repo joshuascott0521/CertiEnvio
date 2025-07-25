@@ -296,7 +296,18 @@ export default function MensajeEmailPage({ params }: { params: Promise<{ id: str
 
                             {/* Botón de descarga */}
                             <div className="flex items-center justify-center w-full p-4">
-                                <button className="flex items-center bg-green-500 text-white rounded-full hover:bg-green-600 transition-all max-w-full sm:max-w-fit shadow-md">
+                                <button
+                                    className="flex items-center bg-green-500 text-white rounded-full hover:bg-green-600 transition-all max-w-full sm:max-w-fit shadow-md"
+                                    type="button"
+                                    onClick={async () => {
+                                        if (message) {
+                                            const result = await messageService.downloadCertificade(message.Id);
+                                            if (!result.success) {
+                                                console.error("Error al descargar el archivo");
+                                            }
+                                        }
+                                    }}
+                                >
 
                                     {/* Ícono PDF */}
                                     <span className="flex items-center justify-center p-2 sm:p-3 rounded-full bg-green-500">
