@@ -301,7 +301,7 @@ export default function MensajeEmailPage({ params }: { params: Promise<{ id: str
                                     type="button"
                                     onClick={async () => {
                                         if (message) {
-                                            const result = await messageService.downloadCertificade(message.Id);
+                                            const result = await messageService.previewCertificade(message.Id);
                                             if (!result.success) {
                                                 console.error("Error al descargar el archivo");
                                             }

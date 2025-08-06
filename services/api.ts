@@ -406,7 +406,29 @@ export const messageService = {
         error: error.message || "Error al descargar el archivo",
       };
     }
+  },
+  previewCertificade: async (id: string): Promise<ApiResponse<void>> => {
+  try {
+    const response = await api.get(`/HtmlToPdf/preview/${id}`, {
+      responseType: "blob", // CLAVE: tratamos el PDF como blob binario
+    });
+
+    const file = new Blob([response.data], { type: "application/pdf" });
+    const fileURL = URL.createObjectURL(file);
+
+    // Abre el PDF en una nueva pestaña (preview)
+    window.open(fileURL, "_blank");
+
+    return { success: true, data: undefined };
+  } catch (error: any) {
+    return {
+      success: false,
+      data: undefined,
+      error: error.message || "Error al mostrar la vista previa",
+    };
   }
+},
+
 };
 
 export default api;
